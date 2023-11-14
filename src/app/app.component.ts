@@ -1,12 +1,31 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import {  Router, RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  standalone: true,
-  imports: [IonApp, IonRouterOutlet],
+    selector: 'app-root',
+    templateUrl: 'app.component.html',
+    standalone: true,
+    imports: [IonApp, IonRouterOutlet, NavbarComponent, RouterOutlet]
 })
 export class AppComponent {
-  constructor() {}
+  isColored = false;
+  constructor(private router: Router) {}
+
+  onScroll(event: CustomEvent) {
+    if (this.router.url === '/' || this.router.url === '/welcome') {
+      if (event.detail.scrollTop > 164) {
+        this.isColored = true;
+      } else {
+        this.isColored = false;
+      }
+    } else {
+      if (event.detail.scrollTop > 36) {
+        this.isColored = true;
+      } else {
+        this.isColored = false;
+      }
+    }
+  }
 }

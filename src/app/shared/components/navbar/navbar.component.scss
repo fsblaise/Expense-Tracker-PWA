@@ -1,0 +1,32 @@
+.navbar {
+    height: 64px;
+    ion-toolbar {
+        height: inherit;
+        display: flex;
+    }
+    border-bottom: solid 1px transparent;
+}
+
+.colored {
+    --background: rgb(var(--ion-color-secondary-tint-rgb)) !important;
+    
+}
+
+.transparent {
+    --background: transparent;
+}
+
+.title {
+    font-style: var(--md-sys-typescale-title-large-font-family-style) !important;
+    font-weight: var(--md-sys-typescale-title-large-font-weight) !important;
+    font-size: var(--md-sys-typescale-title-large-font-size) !important;
+    letter-spacing: var(--md-sys-typescale-title-large-tracking) !important;
+    line-height: var(--md-sys-typescale-title-large-height) !important;
+    text-transform: var(--md-sys-typescale-title-large-text-transform) !important;
+    text-decoration: var(--md-sys-typescale-title-large-text-decoration) !important;
+}
+
+ion-button::part(native) {
+    margin: 0;
+    padding: 0;
+}

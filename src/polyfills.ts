@@ -53,3 +53,9 @@ import 'zone.js';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+
+// index.js
+import '@material/web/button/filled-button.js';
+import '@material/web/button/filled-tonal-button';
+import '@material/web/button/outlined-button.js';
+import '@material/web/button/text-button';

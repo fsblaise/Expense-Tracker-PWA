@@ -6,7 +6,7 @@
           <ion-card-title>Welcome newcomer!</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <form>
+          <form (submit)="signUp()">
             <ion-row>
               <ion-col sizeMd="6" size="12">
                 <ion-item lines="none" fill="outline" color="primary">
@@ -35,7 +35,7 @@
                 </ion-item>
               </ion-col>
             </ion-row>
-            <ion-button color="primary">Sign up</ion-button>
+            <ion-button color="primary" type="submit">Sign up</ion-button>
           </form>
           <ion-row class="not-member">
             <span>Already a member?</span>

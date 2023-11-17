@@ -1,6 +1,6 @@
 <ion-header mode="ios" class="ion-no-border navbar">
   <ion-toolbar class="ion-align-items-center transparent" [class.colored]="isColored">
-      <ion-button *ngIf="router.url !== '/' && router.url !== '/welcome'" slot="start" fill="clear" (click)="location.back()">
+      <ion-button *ngIf="router.url === '/login' || router.url === '/signup'" slot="start" fill="clear" routerLink="/welcome">
         <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
       </ion-button>
     <ion-title mode="md" class="title">

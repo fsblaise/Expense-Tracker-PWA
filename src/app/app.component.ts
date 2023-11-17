@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import { HeaderComponent } from './shared/components/header/header.component';
 import {  Router, RouterOutlet } from '@angular/router';
 
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
     standalone: true,
-    imports: [IonApp, IonRouterOutlet, NavbarComponent, RouterOutlet]
+    imports: [IonApp, IonRouterOutlet, HeaderComponent, RouterOutlet]
 })
 export class AppComponent {
   isColored = false;

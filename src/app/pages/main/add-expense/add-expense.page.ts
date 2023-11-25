@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 @Component({
-    selector: 'app-main',
-    templateUrl: './main.page.html',
-    styleUrls: ['./main.page.scss'],
-    standalone: true,
-    imports: [IonicModule, CommonModule, FormsModule]
+  selector: 'app-add-expense',
+  templateUrl: './add-expense.page.html',
+  styleUrls: ['./add-expense.page.scss'],
+  standalone: true,
+  imports: [IonicModule, CommonModule, FormsModule]
 })
-export class MainPage implements OnInit {
+export class AddExpensePage implements OnInit {
 
   constructor() { }
 

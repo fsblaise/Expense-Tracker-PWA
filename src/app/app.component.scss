@@ -1,0 +1,23 @@
+#sidenav {
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    #drawer {
+        z-index: 10;
+        position: relative;
+    }
+
+    #sidenav-content {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.ml {
+    margin-left: 90px;
+}
+
+.no-ml {
+    margin-left: 0px;
+}

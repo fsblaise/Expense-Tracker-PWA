@@ -43,3 +43,11 @@ ion-icon {
 .ripple {
     color: var(--ion-color-tertiary-tint);
 }
+
+.text {
+    text-align: center;
+}
+
+.active {
+    background: var(--ion-color-tertiary-tint) !important;
+}

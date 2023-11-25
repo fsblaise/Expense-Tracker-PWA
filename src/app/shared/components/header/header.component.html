@@ -1,10 +1,13 @@
-<ion-header mode="ios" class="ion-no-border navbar">
-  <ion-toolbar class="ion-align-items-center transparent" [class.colored]="isColored">
-      <ion-button *ngIf="router.url === '/login' || router.url === '/signup'" slot="start" fill="clear" routerLink="/welcome">
+<div id="wrapper">
+  <ion-header mode="ios" class="ion-no-border navbar">
+    <ion-toolbar class="ion-align-items-center transparent" [class.colored]="isColored">
+      <ion-button *ngIf="router.url === '/login' || router.url === '/signup'" slot="start" fill="clear"
+        routerLink="/welcome">
         <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
       </ion-button>
-    <ion-title mode="md" class="title">
-      {{!isColored && (router.url === '/' || router.url === '/welcome') ? '' : 'Expense Tracker'}}
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+      <ion-title mode="md" class="title">
+        {{!isColored && (router.url === '/' || router.url === '/welcome') ? '' : 'Expense Tracker'}}
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+</div>

@@ -1,6 +1,11 @@
 <ion-app>
-  <app-header [isColored]="isColored"></app-header>
-  <div (ionScroll)="onScroll($any($event))">
-    <ion-router-outlet></ion-router-outlet>
+  <div id="sidenav">
+    <app-navigation id="drawer" *ngIf="router.url.includes('main')"></app-navigation>
+    <div id="sidenav-content">
+      <app-header id="header" [isColored]="isColored"></app-header>
+      <div id="content" (ionScroll)="onScroll($any($event))">
+        <ion-router-outlet [ngClass]="router.url.includes('main') ? 'ml' : 'no-ml'"></ion-router-outlet>
+      </div>
+    </div>
   </div>
 </ion-app>

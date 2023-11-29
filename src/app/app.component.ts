@@ -5,12 +5,20 @@ import {  Router, RouterOutlet } from '@angular/router';
 import { NavigationComponent } from './shared/components/navigation/navigation.component';
 import { CommonModule } from '@angular/common';
 
+
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
     standalone: true,
     styleUrls: ['./app.component.scss'],
-    imports: [IonApp, IonRouterOutlet, HeaderComponent, RouterOutlet, NavigationComponent, CommonModule]
+    imports: [
+      IonApp,
+      IonRouterOutlet,
+      HeaderComponent,
+      RouterOutlet,
+      NavigationComponent,
+      CommonModule,
+    ]
 })
 export class AppComponent {
   isColored = false;

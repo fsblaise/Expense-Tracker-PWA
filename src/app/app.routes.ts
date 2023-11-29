@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthService } from './shared/services/auth.service';
 
 export const routes: Routes = [
   {
@@ -10,7 +11,8 @@ export const routes: Routes = [
   },
   {
     path: 'signup',
-    loadComponent: () => import('./pages/signup/signup.page').then( m => m.SignupPage)
+    loadComponent: () => import('./pages/signup/signup.page').then( m => m.SignupPage),
+    providers: [AuthService]
   },
   {
     path: 'main',

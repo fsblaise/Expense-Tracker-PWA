@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "expense-tracker-pwa-d6e1d": {
+      "hosting": {
+        "app": [
+          "expense-tracker-pwa-d6e1d"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "expense-tracker-pwa-d6e1d"
+  }
+}

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navigation',
@@ -12,8 +13,13 @@ import { IonicModule } from '@ionic/angular';
 })
 export class NavigationComponent  implements OnInit {
 
-  constructor(protected router: Router) { }
+  constructor(protected router: Router, private authService: AuthService) { }
 
   ngOnInit() {}
+
+  async logOut() {
+    await this.authService.signOut();
+    await this.router.navigateByUrl('/');
+  }
 
 }

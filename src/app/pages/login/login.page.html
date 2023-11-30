@@ -6,16 +6,16 @@
             <ion-card-title>Welcome back!</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <form (submit)="login()">
+            <form [formGroup]="signInForm" (ngSubmit)="login()">
               <ion-item lines="none" fill="outline" color="primary">
                 <ion-icon slot="start" name="mail-outline"></ion-icon>
-                <ion-input placeholder="Email address"></ion-input>
+                <ion-input placeholder="Email address" type="email" formControlName="email"></ion-input>
               </ion-item>
               <ion-item lines="none" fill="outline" color="primary">
                 <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
-                <ion-input placeholder="Password"></ion-input>
+                <ion-input placeholder="Password" type="password" formControlName="password"></ion-input>
               </ion-item>
-              <ion-button color="primary" type="submit">Login</ion-button>
+              <ion-button color="primary" type="submit" [disabled]="signInForm.invalid">Login</ion-button>
             </form>
             <ion-row class="not-member">
               <span>Not a member yet?</span>

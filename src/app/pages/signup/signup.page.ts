@@ -22,7 +22,7 @@ export class SignupPage implements OnInit {
   }
 
   async signUp() {
-    if (this.signUpForm.get('password')?.value === this.signUpForm.get('rePassword')?.value) {
+    if (this.signUpForm.get('password')?.value === this.signUpForm.get('rePassword')?.value && this.signUpForm.valid) {
       console.log(this.signUpForm.get('fullName')?.value);
       await this.authService.signUp(this.signUpForm.get('email')?.value, this.signUpForm.get('password')?.value);
       await this.router.navigateByUrl('/main');

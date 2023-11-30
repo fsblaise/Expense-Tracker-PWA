@@ -30,4 +30,12 @@ export class AuthService {
       return;
     }
   }
+
+  async signOut() {
+    await fbAuth.signOut(this.auth);
+  }
+
+  getLoggedInUser() {
+    return fbAuth.user;
+  }
 }

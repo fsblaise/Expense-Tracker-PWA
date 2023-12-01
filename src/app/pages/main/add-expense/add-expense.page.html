@@ -5,9 +5,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">add-expense</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-button (click)="fileInput.click()">Analyze</ion-button>
+  <input #fileInput type="file" hidden (change)="doOCR($event)">
+  <canvas #canvas hidden></canvas>
 </ion-content>

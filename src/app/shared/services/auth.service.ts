@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-import * as fbAuth from '@angular/fire/auth';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { firstValueFrom, take } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-  constructor(private auth: Auth) { }
+  constructor(private auth: AngularFireAuth, ) { }
 
   async signUp(email: string, password: string) {
     try {
-      const user = await fbAuth.createUserWithEmailAndPassword(this.auth ,email, password);
+      const user = await this.auth.createUserWithEmailAndPassword(email, password);
       console.log(user);
       return user;
     } catch (e) {
@@ -23,7 +23,7 @@ export class AuthService {
 
   async signIn(email: string, password: string) {
     try {
-      const user = await fbAuth.signInWithEmailAndPassword(this.auth ,email, password);
+      const user = await this.auth.signInWithEmailAndPassword(email, password);
       return user;
     } catch {
       console.log('something went wrong');
@@ -32,10 +32,10 @@ export class AuthService {
   }
 
   async signOut() {
-    await fbAuth.signOut(this.auth);
+    await this.auth.signOut();
   }
 
-  getLoggedInUser() {
-    return fbAuth.user;
+  async getLoggedInUser() {
+    return firstValueFrom(this.auth.authState.pipe(take(1)));
   }
 }

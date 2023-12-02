@@ -8,11 +8,13 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage)
+    loadComponent: () => import('./pages/login/login.page').then( m => m.LoginPage),
+    canActivate: [authGuard],
   },
   {
     path: 'signup',
     loadComponent: () => import('./pages/signup/signup.page').then( m => m.SignupPage),
+    canActivate: [authGuard],
     providers: [AuthService]
   },
   {
@@ -44,7 +46,8 @@ export const routes: Routes = [
   },
   {
     path: 'welcome',
-    loadComponent: () => import('./pages/welcome/welcome.page').then( m => m.WelcomePage)
+    loadComponent: () => import('./pages/welcome/welcome.page').then( m => m.WelcomePage),
+    canActivate: [authGuard],
   },
   {
     path: '**', redirectTo: '/welcome',

@@ -11,6 +11,9 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { AngularFireModule } from '@angular/fire/compat'
+
 
 if (environment.production) {
   enableProdMode();
@@ -25,7 +28,7 @@ bootstrapApplication(AppComponent, {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    importProvidersFrom(provideFirebaseApp(() => initializeApp(
+    importProvidersFrom(AngularFireModule.initializeApp(
       {
         "projectId": "expense-tracker-pwa-d6e1d",
         "appId": "1:28005660950:web:cb7a62204a11983ac17837",
@@ -34,9 +37,10 @@ bootstrapApplication(AppComponent, {
         "authDomain": "expense-tracker-pwa-d6e1d.firebaseapp.com",
         "messagingSenderId": "28005660950",
         "measurementId": "G-FSPP3RZQMF"
-      }))),
+      })),
     importProvidersFrom(provideAuth(() => getAuth())),
     importProvidersFrom(provideFirestore(() => getFirestore())),
     importProvidersFrom(provideStorage(() => getStorage())),
+    provideAnimations()
   ],
 });

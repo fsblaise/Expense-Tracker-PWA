@@ -1,0 +1,10 @@
+ion-modal {
+    --width: fit-content;
+    --min-width: 300px;
+    --height: fit-content;
+    --border-radius: 24px;
+}
+
+#error-title {
+    color: var(--ion-color-danger);
+}

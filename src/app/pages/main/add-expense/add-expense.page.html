@@ -1,11 +1,84 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>add-expense</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" [scrollEvents]="true" class="ion-padding" style="--padding-top: 64px;">
+  <ion-card id="welcome-card">
+    <ion-card-content>
+      <h1>Add expense</h1>
+    </ion-card-content>
+  </ion-card>
 
-<ion-content [fullscreen]="true">
-  <ion-button (click)="fileInput.click()">Analyze</ion-button>
-  <input #fileInput type="file" hidden (change)="doOCR($event)">
+  <h1 style="margin-top: 64px;">You can add your expenses using the following techniques:</h1>
+
+  <div class="container">
+    <ion-card>
+      <ion-card-header
+        style="height: 200px; background-color: rgb(var(--ion-color-tertiary-rgb)); border-radius: 24px;">
+
+      </ion-card-header>
+      <ion-card-content>
+        <ion-row class="ion-justify-content-between ion-align-items-center">
+          <div>
+            <ion-card-title>
+              Form (standard)
+            </ion-card-title>
+            <p>
+              Fill in the form provided below.
+            </p>
+          </div>
+          <div>
+            <ion-icon name="chevron-down-outline" class="icon-button" color="tertiary"
+              (click)="accordionOpened = !accordionOpened"
+              [ngClass]="accordionOpened ? 'rotate-forward' : 'rotate-backward'"></ion-icon>
+          </div>
+        </ion-row>
+        <ion-row class="ion-justify-content-center ion-align-items-center" id="accordion"
+          [@openClose]="accordionOpened ? true : false">
+          <form>
+            <ion-item lines="none" fill="outline" color="primary">
+              <ion-icon slot="start" name="storefront-outline"></ion-icon>
+              <ion-input placeholder="Shop name"></ion-input>
+            </ion-item>
+            <ion-item lines="none" fill="outline" color="primary">
+              <ion-icon slot="start" name="cash-outline"></ion-icon>
+              <ion-input placeholder="Sum paid"></ion-input>
+            </ion-item>
+            <ion-button color="primary" type="submit" shape="round">Add</ion-button>
+          </form>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card style="height: min-content;">
+      <ion-card-header
+        style="height: 200px; background-color: rgb(var(--ion-color-tertiary-rgb)); border-radius: 24px;">
+
+      </ion-card-header>
+      <ion-card-content>
+        <ion-row class="ion-justify-content-between ion-align-items-center">
+          <div>
+            <ion-card-title>
+              OCR (photo)
+            </ion-card-title>
+            <p>
+              Use the packaged OCR, to get the required fields from a picture you've taken.
+            </p>
+          </div>
+          <div>
+            <ion-button shape="round" (click)="fileInput.click()" [disabled]="!worker || isRecognising || initializing"
+              style="min-width: 120px;">
+              <ion-spinner *ngIf="!worker || isRecognising || initializing" style="height: 20px;"></ion-spinner>
+              <span *ngIf="!isRecognising && !initializing">Analyze</span>
+              <span *ngIf="initializing">Initializing OCR</span>
+              <span *ngIf="isRecognising && !initializing">{{ percentage | number: '1.0-0' }} %</span>
+            </ion-button>
+            <input #fileInput type="file" hidden (change)="doOCR($event)">
+          </div>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <app-dialog [isOpen]="showAlert" title="Processing done" [msg]="processedText" type="confirm" confirmButton="Accept"
+    cancelButton="Refuse" (closeEvent)="modalClosed($event)">
+  </app-dialog>
+
   <canvas #canvas hidden></canvas>
 </ion-content>

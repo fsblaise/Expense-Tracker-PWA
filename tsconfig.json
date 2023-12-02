@@ -21,7 +21,7 @@
     "lib": ["es2018", "dom"],
     "useDefineForClassFields": false,
     "strictPropertyInitialization": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -31,5 +31,5 @@
   },
   "exclude": [
     "**/*.js"  // Exclude JavaScript files from TypeScript checking
-  ]
+  ],
 }

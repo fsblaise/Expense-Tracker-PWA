@@ -1,0 +1,18 @@
+<ion-modal #modal [isOpen]="isOpen" (willDismiss)="onClose($event)">
+  <ng-template>
+    <ion-row class="ion-padding-horizontal">
+      <h1 *ngIf="type !== 'error'">{{title}}</h1>
+      <h1 *ngIf="type === 'error'" id="error-title">Error</h1>
+    </ion-row>
+
+    <ion-row class="ion-padding ion-margin">
+      {{msg}}
+    </ion-row>
+
+    <ion-row class="ion-padding-horizontal ion-justify-content-center ion-align-items-center">
+      <ion-button *ngIf="type === 'error' || type === 'basic'" fill="clear" shape="round" (click)="modal.dismiss(null, 'ok')">Ok</ion-button>
+      <ion-button *ngIf="type === 'confirm'" fill="clear" shape="round" (click)="modal.dismiss(null, 'canceled')">{{cancelButton}}</ion-button>
+      <ion-button *ngIf="type === 'confirm'" fill="clear" shape="round" (click)="modal.dismiss(null, 'confirmed')">{{confirmButton}}</ion-button>
+    </ion-row>
+  </ng-template>
+</ion-modal>

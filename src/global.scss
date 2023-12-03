@@ -113,3 +113,8 @@ ion-card {
     box-shadow: none;
     color: var(--ion-color-dark);
 }
+
+.icon-button:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}

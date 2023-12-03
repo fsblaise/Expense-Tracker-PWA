@@ -7,6 +7,7 @@ import { PSM, createWorker } from 'tesseract.js';
 import preprocessImage from './preprocess';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
+import { ExpenseService } from 'src/app/shared/services/expense.service';
 
 @Component({
   selector: 'app-add-expense',
@@ -30,12 +31,14 @@ export class AddExpensePage implements OnInit, OnDestroy {
   percentage = 0;
   isRecognising = false;
   initializing = false;
+  processing = false;
   accordionOpened = false;
   showAlert = false;
   processedText: string;
+  selectedFile: File | null = null;
 
 
-  constructor() {
+  constructor(private expenseService: ExpenseService) {
     this.workerPromise = createWorker("hun", 1, {
       logger: (m) => {
         console.log(m)
@@ -58,14 +61,19 @@ export class AddExpensePage implements OnInit, OnDestroy {
     })
   }
 
-  async doOCR(event: any) {
-    this.initializing = true;
-    const file = event?.target?.files[0];
-    const preprocessedImagePath = './images/' + file.name + '_preprocessed';
-    const imageData = URL.createObjectURL(file);
+  @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
+  async doOCR() {
+    // this.initializing = true;
+    // const file = event?.target?.files[0];
+    // const preprocessedImagePath = './images/' + file.name + '_preprocessed';
+    // const imageData = URL.createObjectURL(file);
 
-
-    await this.preprocessImage(imageData, preprocessedImagePath);
+    // await this.preprocessImage(imageData, preprocessedImagePath);
+    // console.log(this.selectedFile);
+    this.processing = true;
+    const response = await this.expenseService.doOcr(this.fileInput);
+    console.log(response);
+    this.processing = false;
     // const { data: { text } } = await this.worker.recognize(file);
 
     // console.log(text);
@@ -86,7 +94,7 @@ export class AddExpensePage implements OnInit, OnDestroy {
 
       const dataUrl = canvas.toDataURL("image/jpeg");
       const { data: { text } } = await this.worker.recognize(dataUrl);
-      // console.log(text);
+      console.log(text);
 
       const extractedNumbers = this.extractNumbers(text);
       // console.log('Extracted result:');
@@ -106,7 +114,7 @@ export class AddExpensePage implements OnInit, OnDestroy {
   }
 
   extractNumbers(text: string) {
-    const matches = text.match(/(?:bankkártya|bankkartya|bak|bank|kesz(?:penz)?|kész(?:pénz)?|)\D*([\d\s.,]+)\s*Ft/i);
+    const matches = text.match(/(?:\b(?:bankkártya|bankkartya|bank|kesz(?:penz)?|kész(?:pénz)?)\b\D*)([\d\s.,]+)\s*Ft/i);
 
     if (!matches) {
       return {};

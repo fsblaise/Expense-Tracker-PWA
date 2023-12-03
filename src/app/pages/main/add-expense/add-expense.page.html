@@ -62,14 +62,15 @@
             </p>
           </div>
           <div>
-            <ion-button shape="round" (click)="fileInput.click()" [disabled]="!worker || isRecognising || initializing"
+            <ion-button shape="round" (click)="fileInput.click()" [disabled]="!worker || isRecognising || initializing || processing"
               style="min-width: 120px;">
-              <ion-spinner *ngIf="!worker || isRecognising || initializing" style="height: 20px;"></ion-spinner>
-              <span *ngIf="!isRecognising && !initializing">Analyze</span>
+              <ion-spinner *ngIf="!worker || isRecognising || initializing || processing" style="height: 20px;"></ion-spinner>
+              <span *ngIf="!isRecognising && !initializing && !processing">Analyze</span>
               <span *ngIf="initializing">Initializing OCR</span>
+              <span *ngIf="processing">Processing</span>
               <span *ngIf="isRecognising && !initializing">{{ percentage | number: '1.0-0' }} %</span>
             </ion-button>
-            <input #fileInput type="file" hidden (change)="doOCR($event)">
+            <input #fileInput type="file" hidden (change)="doOCR()">
           </div>
         </ion-row>
       </ion-card-content>

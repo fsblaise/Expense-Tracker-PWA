@@ -57,11 +57,6 @@ ion-item::part(native) {
     height: 42px;
 }
 
-.icon-button:hover {
-    opacity: 0.8;
-    cursor: pointer;
-}
-
 .rotate-forward {
     animation: rotate-forward 0.3s forwards;
 }

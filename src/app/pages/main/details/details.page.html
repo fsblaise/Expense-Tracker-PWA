@@ -1,13 +1,52 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>details</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">details</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" [scrollEvents]="true" class="ion-padding" style="--padding-top: 64px;">
+  <ion-card id="welcome-card">
+    <ion-card-header>
+      <ion-card-title>
+        <h1>Expense details</h1>
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="table-wrapper">
+        <table class="details-table" *ngIf="expense">
+          <thead>
+            <tr>
+              <th>
+                <ion-icon class="icon-button" [class.disabled]="currentMonthIndex <= 0" name="chevron-back-outline"
+                 (click)="prevMonth()" color="primary"></ion-icon>
+              </th>
+              <th>
+                {{ months[month] }}
+              </th>
+              <th>
+                <ion-icon class="icon-button" [class.disabled]="currentMonthIndex >= activeMonths.length-1" name="chevron-forward-outline"
+                 (click)="nextMonth()" color="primary"></ion-icon>
+              </th>
+            </tr>
+            <tr>
+              <td>Total money spent: <strong>{{expense.summary.spent}}</strong></td>
+              <td>Stores visited: <strong>{{expense.summary.storeCount}}</strong></td>
+              <td>Transactions completed: <strong>{{expense.summary.transactionCount}}</strong></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Store</th>
+              <th>Amount (Ft)</th>
+              <th>Date</th>
+            </tr>
+            <tr *ngFor="let transaction of expense.transactions">
+              <td>{{transaction.storeName}}</td>
+              <td>{{transaction.amount}}</td>
+              <td>{{transaction.timestamp}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ion-row class="ion-justify-content-center ion-align-items-center">
+        <h3 *ngIf="!expense">
+          There are no expenses recorded.
+        </h3>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

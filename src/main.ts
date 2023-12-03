@@ -13,6 +13,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { AngularFireModule } from '@angular/fire/compat'
+import { provideHttpClient } from "@angular/common/http";
 
 
 if (environment.production) {
@@ -41,6 +42,7 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(provideAuth(() => getAuth())),
     importProvidersFrom(provideFirestore(() => getFirestore())),
     importProvidersFrom(provideStorage(() => getStorage())),
-    provideAnimations()
+    provideAnimations(),
+    provideHttpClient()
   ],
 });

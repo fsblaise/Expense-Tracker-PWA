@@ -6,42 +6,6 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <!-- <div class="table-wrapper">
-        <table class="details-table" *ngIf="expense">
-          <thead>
-            <tr>
-              <th>
-                <ion-icon class="icon-button" [class.disabled]="currentMonthIndex <= 0" name="chevron-back-outline"
-                 (click)="prevMonth()" color="primary"></ion-icon>
-              </th>
-              <th>
-                {{ months[month] }}
-              </th>
-              <th>
-                <ion-icon class="icon-button" [class.disabled]="currentMonthIndex >= activeMonths.length-1" name="chevron-forward-outline"
-                 (click)="nextMonth()" color="primary"></ion-icon>
-              </th>
-            </tr>
-            <tr>
-              <td>Total money spent: <strong>{{expense.summary.spent}}</strong></td>
-              <td>Stores visited: <strong>{{expense.summary.storeCount}}</strong></td>
-              <td>Transactions completed: <strong>{{expense.summary.transactionCount}}</strong></td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th>Store</th>
-              <th>Amount (Ft)</th>
-              <th>Date</th>
-            </tr>
-            <tr *ngFor="let transaction of expense.transactions">
-              <td>{{transaction.storeName}}</td>
-              <td>{{transaction.amount}}</td>
-              <td>{{transaction.timestamp}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div> -->
       <ion-grid *ngIf="expense && !loading" id="table-grid" class="ion-no-padding">
         <ion-row id="table-head">
           <ion-col size="4">
@@ -56,7 +20,7 @@
              (click)="nextMonth()" color="primary"></ion-icon>
           </ion-col>
         </ion-row>
-        <ion-row id="table-summary" class="ion-padding-vertical">
+        <ion-row id="table-summary" class="ion-padding-vertical" [@slideInOut]="currentMonthIndex">
           <ion-col>
             <span>Total money spent: <strong>{{expense.summary.spent}}</strong></span>
           </ion-col>
@@ -67,7 +31,7 @@
             <span>Transactions completed: <strong>{{expense.summary.transactionCount}}</strong></span>
           </ion-col>
         </ion-row>
-        <ion-row id="table-body">
+        <ion-row id="table-body" [@slideInOut]="currentMonthIndex">
           <ion-col class="ion-no-padding">
             <ion-row>
               <ion-col size="4">Store</ion-col>
@@ -88,7 +52,7 @@
         </h3>
       </ion-row>
       <ion-row class="ion-justify-content-center ion-align-items-center">
-        <ion-spinner *ngIf="loading"></ion-spinner>
+        <ion-spinner *ngIf="loading" color="primary"></ion-spinner>
       </ion-row>
     </ion-card-content>
   </ion-card>

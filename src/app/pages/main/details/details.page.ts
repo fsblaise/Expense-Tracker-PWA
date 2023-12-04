@@ -5,13 +5,26 @@ import { IonicModule } from '@ionic/angular';
 import { Expense } from 'src/app/shared/models/expense.model';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ExpenseService } from 'src/app/shared/services/expense.service';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-details',
   templateUrl: './details.page.html',
   styleUrls: ['./details.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule],
+  animations: [
+    trigger('slideInOut', [
+      transition(':increment', [
+        style({ transform: 'translateX(100%)' }),
+        animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
+      ]),
+      transition(':decrement', [
+        style({ transform: 'translateX(-100%)' }),
+        animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
+      ]),
+    ]),
+  ],
 })
 export class DetailsPage implements OnInit {
   expense: Expense;
@@ -23,6 +36,7 @@ export class DetailsPage implements OnInit {
   user: firebase.default.User | null;
   activeMonths: string[];
   loading = false;
+  animationState: string = 'current'; // Initial state
 
   constructor(private authService: AuthService, private expenseService: ExpenseService) { }
 

@@ -13,8 +13,6 @@ ion-card-header {
 
     ion-icon {
         color: white;
-        width: 112px;
-        height: 112px;
     }
 }
 
@@ -37,15 +35,6 @@ ion-item::part(native) {
     padding: 50px 0;
     h1 {
         font-size: 88px;
-    }
-    h3 {
-        font-size: var(--md-sys-typescale-headline-small-font-size);
-        margin-bottom: 25px;
-    }
-    ion-button {
-        width: 200px;
-        height: 60px;
-        font-size: 20px;
     }
 }
 

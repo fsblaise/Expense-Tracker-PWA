@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "short_name": "app",
+  "name": "expense_tracker_pwa",
+  "short_name": "expense_tracker_pwa",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",

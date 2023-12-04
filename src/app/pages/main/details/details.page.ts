@@ -22,10 +22,12 @@ export class DetailsPage implements OnInit {
   year: number;
   user: firebase.default.User | null;
   activeMonths: string[];
+  loading = false;
 
   constructor(private authService: AuthService, private expenseService: ExpenseService) { }
 
   async ngOnInit() {
+    this.loading = true;
     this.user = await this.authService.getLoggedInUser();    
     this.activeMonths = (await this.expenseService.getActiveMonths(this.user?.uid as string) as any).activeMonths;
     
@@ -33,6 +35,7 @@ export class DetailsPage implements OnInit {
     // firebase call with filter to "year-monthIndex" + userId
     this.currentMonthIndex = this.activeMonths.findIndex((value: string) => value.includes((this.month + 1).toString()));
     this.expense = await this.expenseService.getExpense(this.activeMonths[this.currentMonthIndex], this.user?.uid as string);
+    this.loading = false;
   }
 
   // uj otlet, technikai doksi az expensesbe

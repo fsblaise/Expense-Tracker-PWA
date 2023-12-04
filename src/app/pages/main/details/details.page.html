@@ -42,7 +42,7 @@
           </tbody>
         </table>
       </div> -->
-      <ion-grid *ngIf="expense" id="table-grid" class="ion-no-padding">
+      <ion-grid *ngIf="expense && !loading" id="table-grid" class="ion-no-padding">
         <ion-row id="table-head">
           <ion-col size="4">
             <ion-icon class="icon-button" [class.disabled]="currentMonthIndex <= 0" name="chevron-back-outline"
@@ -83,9 +83,12 @@
         </ion-row>
       </ion-grid>
       <ion-row class="ion-justify-content-center ion-align-items-center">
-        <h3 *ngIf="!expense">
+        <h3 *ngIf="!expense && !loading">
           There are no expenses recorded.
         </h3>
+      </ion-row>
+      <ion-row class="ion-justify-content-center ion-align-items-center">
+        <ion-spinner *ngIf="loading"></ion-spinner>
       </ion-row>
     </ion-card-content>
   </ion-card>

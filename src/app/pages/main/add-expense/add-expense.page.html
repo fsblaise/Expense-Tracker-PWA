@@ -11,7 +11,7 @@
     <ion-card>
       <ion-card-header
         style="height: 200px; background-color: rgb(var(--ion-color-tertiary-rgb)); border-radius: 24px;">
-
+        <ion-icon src="../../../../assets/icons/form.svg"></ion-icon>
       </ion-card-header>
       <ion-card-content>
         <ion-row class="ion-justify-content-between ion-align-items-center">
@@ -24,23 +24,23 @@
             </p>
           </div>
           <div>
-            <ion-icon name="chevron-down-outline" class="icon-button" color="tertiary"
+            <ion-icon name="chevron-down-outline" class="icon-button" color="primary"
               (click)="accordionOpened = !accordionOpened"
               [ngClass]="accordionOpened ? 'rotate-forward' : 'rotate-backward'"></ion-icon>
           </div>
         </ion-row>
         <ion-row class="ion-justify-content-center ion-align-items-center" id="accordion"
           [@openClose]="accordionOpened ? true : false">
-          <form>
+          <form [formGroup]="addExpenseForm" (ngSubmit)="addExpense('form')">
             <ion-item lines="none" fill="outline" color="primary">
               <ion-icon slot="start" name="storefront-outline"></ion-icon>
-              <ion-input placeholder="Shop name"></ion-input>
+              <ion-input placeholder="Shop name" formControlName="storeName"></ion-input>
             </ion-item>
             <ion-item lines="none" fill="outline" color="primary">
               <ion-icon slot="start" name="cash-outline"></ion-icon>
-              <ion-input placeholder="Sum paid"></ion-input>
+              <ion-input placeholder="Sum paid" formControlName="amount"></ion-input>
             </ion-item>
-            <ion-button color="primary" type="submit" shape="round">Add</ion-button>
+            <ion-button color="primary" type="submit" shape="round" [disabled]="addExpenseForm.invalid">Add</ion-button>
           </form>
         </ion-row>
       </ion-card-content>
@@ -49,7 +49,7 @@
     <ion-card style="height: min-content;">
       <ion-card-header
         style="height: 200px; background-color: rgb(var(--ion-color-tertiary-rgb)); border-radius: 24px;">
-
+        <ion-icon src="../../../../assets/icons/ocr.svg"></ion-icon>
       </ion-card-header>
       <ion-card-content>
         <ion-row class="ion-justify-content-between ion-align-items-center">

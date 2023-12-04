@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { PSM, createWorker } from 'tesseract.js';
 // @ts-ignore
@@ -8,6 +8,7 @@ import preprocessImage from './preprocess';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { ExpenseService } from 'src/app/shared/services/expense.service';
+import { getAddExpenseForm } from 'src/app/shared/forms/add-expense.form';
 
 @Component({
   selector: 'app-add-expense',
@@ -21,7 +22,7 @@ import { ExpenseService } from 'src/app/shared/services/expense.service';
     ])
   ],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, DialogComponent]
+  imports: [IonicModule, CommonModule, FormsModule, DialogComponent, ReactiveFormsModule]
 })
 export class AddExpensePage implements OnInit, OnDestroy {
   workerPromise: Promise<Tesseract.Worker>;
@@ -36,6 +37,8 @@ export class AddExpensePage implements OnInit, OnDestroy {
   showAlert = false;
   processedText: string;
   selectedFile: File | null = null;
+
+  addExpenseForm: FormGroup = getAddExpenseForm();
 
 
   constructor(private expenseService: ExpenseService) {
@@ -59,6 +62,15 @@ export class AddExpensePage implements OnInit, OnDestroy {
       tessedit_minimal_confidence: 70, // Adjust as needed
       oem: 1, // Specify the OCR Engine Mode (1 for LSTM, 3 for both LSTM and Legacy)
     })
+  }
+
+  async addExpense(type: 'form' | 'ocr') {
+    if (type === 'form') {
+      console.log(this.addExpenseForm.get('storeName')?.value);
+      console.log(this.addExpenseForm.get('amount')?.value);
+    } else {
+
+    }
   }
 
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;

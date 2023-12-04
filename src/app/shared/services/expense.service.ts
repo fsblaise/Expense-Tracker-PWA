@@ -4,6 +4,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ref } from '@angular/fire/storage';
 import { firstValueFrom } from 'rxjs';
 import { Expense } from '../models/expense.model';
+import { Transaction } from '../models/transaction.model';
 
 const OCR_API = 'https://api.ocr.space/parse/image';
 
@@ -52,6 +53,10 @@ export class ExpenseService {
       .valueChanges());
 
     return res[0];
+  }
+
+  async addExpense(transaction: Transaction) {
+    
   }
 
 }

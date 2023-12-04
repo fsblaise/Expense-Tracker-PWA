@@ -6,6 +6,18 @@ ion-card-content {
     padding: 24px;
 }
 
+ion-card-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    ion-icon {
+        color: white;
+        width: 112px;
+        height: 112px;
+    }
+}
+
 ion-label {
     --color: transparent;
 }

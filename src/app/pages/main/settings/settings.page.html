@@ -5,75 +5,88 @@
     </ion-card-content>
   </ion-card>
 
-  <div class="container">
+  <ion-row *ngIf="loading" style="width: 100%; margin-top: 64px" class="ion-justify-content-center">
+    <ion-spinner></ion-spinner>
+  </ion-row>
+  <div *ngIf="!loading" class="container">
     <ion-col>
       <h1 style="margin-top: 64px;">Profile:</h1>
-      <ion-card>
-        <ion-card-content>
-          <ion-row class="ion-align-items-center" >
-            <ion-col>Darkmode:</ion-col>
-            <ion-col>
-              <ion-toggle id="dark-mode-switch"></ion-toggle>
-            </ion-col>
+      <ion-card style="height: min-content;">
+        <form [formGroup]="profileSettingsForm" (ngSubmit)="updateProfile()">
+          <ion-card-content>
+            <ion-row class="ion-align-items-center">
+              <ion-col>Darkmode:</ion-col>
+              <ion-col>
+                <ion-toggle id="dark-mode-switch" formControlName="darkMode" (ionChange)="toggleDarkMode()"></ion-toggle>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center">
+              <ion-col>Sync darkmode:</ion-col>
+              <ion-col>
+                <ion-toggle formControlName="syncDarkMode"></ion-toggle>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center" style="border-top: solid 1px rgba(0, 0, 0, 0.12)">
+              <ion-col>Full name:</ion-col>
+              <ion-col>
+                <ion-row class="ion-align-items-center">
+                  <ion-input style="text-align: end; flex: 1; margin-right: 5px;" 
+                  type="text" formControlName="fullName" color="primary"></ion-input>
+                  <ion-icon name="pencil-outline"></ion-icon>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+          <ion-row class="ion-align-items-center ion-justify-content-evenly button-row">
+            <ion-button fill="clear" shape="round" style="font-weight: 700;" color="primary" type="submit">Save
+              changes</ion-button>
+            <ion-button fill="clear" shape="round" style="font-weight: 700;" color="danger"
+              (click)="deleteProfile()">Delete profile</ion-button>
           </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col>Sync darkmode:</ion-col>
-            <ion-col>
-              <ion-toggle></ion-toggle>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center" style="border-top: solid 1px rgba(0, 0, 0, 0.12)">
-            <ion-col>Username:</ion-col>
-            <ion-col>
-              <ion-row class="ion-align-items-center">
-                <ion-input value="asd" style="text-align: center; flex: 1;"></ion-input>
-                <ion-icon name="pencil-outline"></ion-icon>
-              </ion-row>
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
-        <ion-row class="ion-align-items-center ion-justify-content-evenly button-row">
-          <ion-button fill="clear" shape="round" style="font-weight: 700;" color="primary">Update profile</ion-button>
-          <ion-button fill="clear" shape="round" style="font-weight: 700;" color="danger">Delete profile</ion-button>
-        </ion-row>
+        </form>
       </ion-card>
     </ion-col>
     <ion-col>
       <h1 style="margin-top: 64px;">Expenses:</h1>
       <ion-card style="height: min-content;">
-        <ion-card-content>
-          <ion-row class="ion-align-items-center">
-            <ion-col>Currency:</ion-col>
-            <ion-col>
-              <ion-row class="ion-align-items-center">
-                <ion-input value="Ft" style="text-align: center; flex: 1; width: 50px;" type="text"></ion-input>
-                <ion-icon name="pencil-outline"></ion-icon>
-              </ion-row>
-            </ion-col>
+        <form [formGroup]="expenseSettingsForm" (ngSubmit)="updateExpenses()">
+          <ion-card-content>
+            <ion-row class="ion-align-items-center">
+              <ion-col>Currency:</ion-col>
+              <ion-col>
+                <ion-row class="ion-align-items-center">
+                  <ion-input style="text-align: end; flex: 1; width: 50px; margin-right: 5px;" type="text"
+                    formControlName="currency"></ion-input>
+                  <ion-icon name="pencil-outline"></ion-icon>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center">
+              <ion-col>Receipt language (OCR):</ion-col>
+              <ion-col>
+                <ion-row class="ion-align-items-center" style="gap: 5px;">
+                  <ion-input style="text-align: end; flex: 1; width: 40px;" type="text"
+                    formControlName="language"></ion-input>
+                  <ion-icon name="pencil-outline"></ion-icon>
+                  <ion-icon name="information-circle-outline" id="info-icon"></ion-icon>
+                  <ion-popover mode="ios" trigger="info-icon" triggerAction="hover">
+                    <ng-template>
+                      <ion-content class="ion-padding">
+                        Format:<br>
+                        3 letters, all lowercase<br><br>
+                        Example: <strong>eng</strong>
+                      </ion-content>
+                    </ng-template>
+                  </ion-popover>
+                </ion-row>
+              </ion-col>
+            </ion-row>
+          </ion-card-content>
+          <ion-row class="ion-align-items-center ion-justify-content-evenly button-row">
+            <ion-button fill="clear" shape="round" style="font-weight: 700;"
+             color="primary" type="submit">Save changes</ion-button>
           </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col>Receipt language (OCR):</ion-col>
-            <ion-col>
-              <ion-row class="ion-align-items-center" style="gap: 5px;">
-                <ion-input value="hun" style="text-align: center; flex: 1; width: 40px;"></ion-input>
-                <ion-icon name="information-circle-outline" id="info-icon"></ion-icon>
-                <ion-popover mode="ios" trigger="info-icon" triggerAction="hover">
-                  <ng-template>
-                    <ion-content class="ion-padding">
-                      Format:<br> 
-                      3 letters, all lowercase<br><br>
-                      Example: <strong>eng</strong>
-                    </ion-content>
-                  </ng-template>
-                </ion-popover>
-              </ion-row>
-            </ion-col>
-          </ion-row>
-        </ion-card-content>
-        <ion-row class="ion-align-items-center ion-justify-content-evenly button-row">
-          <ion-button fill="clear" shape="round" style="font-weight: 700;" color="primary">Update expenses</ion-button>
-          <ion-button fill="clear" shape="round" style="font-weight: 700;" color="danger">Reset to default</ion-button>
-        </ion-row>
+        </form>
       </ion-card>
     </ion-col>
   </div>

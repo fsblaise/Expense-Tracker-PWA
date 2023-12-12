@@ -118,3 +118,7 @@ ion-card {
     opacity: 0.8;
     cursor: pointer;
 }
+
+.ion-valid.sc-ion-input-md-h {
+    --highlight-color: var(--ion-color-primary);
+}

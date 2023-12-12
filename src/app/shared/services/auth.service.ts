@@ -1,5 +1,7 @@
+import { User } from './../models/user.model';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { firstValueFrom, take } from 'rxjs';
 
 @Injectable({
@@ -7,13 +9,35 @@ import { firstValueFrom, take } from 'rxjs';
 })
 export class AuthService {
 
-  constructor(private auth: AngularFireAuth, ) { }
+  constructor(private auth: AngularFireAuth, private store: AngularFirestore) { }
 
-  async signUp(email: string, password: string) {
+  async signUp(email: string, password: string, fullName: string) {
     try {
-      const user = await this.auth.createUserWithEmailAndPassword(email, password);
-      console.log(user);
-      return user;
+      await this.auth.createUserWithEmailAndPassword(email, password);
+      const id = await this.store.collection('Users').ref.doc().id;
+      const userObj = {
+        id,
+        email,
+        fullName,
+        syncDarkMode: false,
+        darkMode: false,
+        expensePreferences: {
+          currency: 'Ft',
+          language: 'hun'
+        },
+      } as User;
+      await this.store.collection('Users').doc(id).set(userObj);
+      return userObj;
+    } catch (e) {
+      console.log('something went wrong');
+      console.log(e);
+      return;
+    }
+  }
+
+  async updateUser(user: User) {
+    try {
+      return await this.store.collection('Users').doc(user.id).set(user);
     } catch (e) {
       console.log('something went wrong');
       console.log(e);
@@ -25,8 +49,9 @@ export class AuthService {
     try {
       const user = await this.auth.signInWithEmailAndPassword(email, password);
       return user;
-    } catch {
+    } catch (e) {
       console.log('something went wrong');
+      console.log(e);
       return;
     }
   }
@@ -37,5 +62,16 @@ export class AuthService {
 
   async getLoggedInUser() {
     return firstValueFrom(this.auth.authState.pipe(take(1)));
+  }
+
+  async getLoggedInUserObj() {
+    try {
+      const id = (await this.getLoggedInUser())?.uid;
+      return firstValueFrom(await this.store.collection('Users').doc(id).valueChanges()) as unknown as User;
+    } catch (e) {
+      console.log('something went wrong');
+      console.log(e);
+      return null;
+    }
   }
 }

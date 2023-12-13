@@ -37,6 +37,7 @@ export class AddExpensePage implements OnInit, OnDestroy {
   showAlert = false;
   processedText: string;
   selectedFile: File | null = null;
+  online: boolean = true;
 
   addExpenseForm: FormGroup = getAddExpenseForm();
 
@@ -68,6 +69,7 @@ export class AddExpensePage implements OnInit, OnDestroy {
     if (type === 'form') {
       console.log(this.addExpenseForm.get('storeName')?.value);
       console.log(this.addExpenseForm.get('amount')?.value);
+      this.expenseService.addExpense({},'asd');
     } else {
 
     }
@@ -75,21 +77,22 @@ export class AddExpensePage implements OnInit, OnDestroy {
 
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
   async doOCR() {
-    // this.initializing = true;
-    // const file = event?.target?.files[0];
-    // const preprocessedImagePath = './images/' + file.name + '_preprocessed';
-    // const imageData = URL.createObjectURL(file);
-
-    // await this.preprocessImage(imageData, preprocessedImagePath);
-    // console.log(this.selectedFile);
-    this.processing = true;
-    const response = await this.expenseService.doOcr(this.fileInput);
-    console.log(response);
-    this.processing = false;
-    // const { data: { text } } = await this.worker.recognize(file);
-
-    // console.log(text);
-    // console.log(event?.target?.files[0]);
+    if (this.fileInput.nativeElement.files) {
+      if(this.online) {
+        this.processing = true;
+        const response = await this.expenseService.doOcr(this.fileInput);
+        console.log(response);
+        this.processedText = `Bolt neve: valami`;
+        this.showAlert = true;
+        this.processing = false;
+      } else {
+        this.initializing = true;
+        const file = this.fileInput.nativeElement.files[0];
+        const preprocessedImagePath = './images/' + file.name + '_preprocessed';
+        const imageData = URL.createObjectURL(file);
+        await this.preprocessImage(imageData, preprocessedImagePath);
+      }
+    }
   }
 
   async preprocessImage(imageData: string, output: string) {
@@ -106,18 +109,12 @@ export class AddExpensePage implements OnInit, OnDestroy {
 
       const dataUrl = canvas.toDataURL("image/jpeg");
       const { data: { text } } = await this.worker.recognize(dataUrl);
-      console.log(text);
 
       const extractedNumbers = this.extractNumbers(text);
-      // console.log('Extracted result:');
       this.processedText = `Bolt neve: ${extractedNumbers} Ft`;
-      console.log(extractedNumbers);
 
       this.showAlert = true;
-      // const link = document.createElement('a');
-      // link.href = dataUrl;
-      // link.download = output + '.png';
-      // link.click();
+
       this.percentage = 0;
       this.isRecognising = false;
     };
@@ -132,9 +129,6 @@ export class AddExpensePage implements OnInit, OnDestroy {
       return {};
     }
 
-    // console.log(matches);
-
-
     const [, numbers] = matches;
 
     // Remove non-digit characters and convert to a number
@@ -144,7 +138,6 @@ export class AddExpensePage implements OnInit, OnDestroy {
   }
 
   modalClosed(event: any) {
-    console.log(event);
     this.showAlert = false;
   }
 

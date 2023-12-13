@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { ElementRef, Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { ref } from '@angular/fire/storage';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { Expense } from '../models/expense.model';
 import { Transaction } from '../models/transaction.model';
 
@@ -55,8 +55,29 @@ export class ExpenseService {
     return res[0];
   }
 
-  async addExpense(transaction: Transaction) {
+  async addExpense(transaction: any, userId: string) {
+    // get current month and year
+    const month = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+
+    // check if an expense representing the current month is already existing
+    const snapshot = await this.fstore.collection('Expenses', ref => ref
+      .where('month', '==', (year + '-' + month))
+      .where('userId', '==', userId)).valueChanges();
+
+    // map through the items of the query
+    snapshot.pipe(
+      map(docs => {
+        if (docs.length > 0) {
+          const doc = docs[0];
+          // update existing expense
+        } else {
+          // create new expense
+        }
+      })
+    )
     
+    // return await this.fstore.collection('Expenses')
   }
 
 }

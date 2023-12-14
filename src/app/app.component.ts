@@ -6,6 +6,7 @@ import { NavigationComponent } from './shared/components/navigation/navigation.c
 import { CommonModule } from '@angular/common';
 import { SwUpdate } from '@angular/service-worker';
 import { NetworkService } from './shared/services/network.service';
+import { SyncService } from './shared/services/sync.service';
 
 
 @Component({
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit {
   constructor(protected router: Router,
               private swUpdate: SwUpdate,
               private network: NetworkService,
+              private syncService: SyncService,
               private toastController: ToastController) {
     
   }

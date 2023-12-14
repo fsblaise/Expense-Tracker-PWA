@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 import { BehaviorSubject } from 'rxjs';
+import { SyncService } from './sync.service';
 
 @Injectable({
   providedIn: 'root',
@@ -23,13 +24,7 @@ export class NetworkService {
 
     window.addEventListener("online", async () => {
       this.updateNetworkState('online');
-      const toast = await this.toastController.create({
-        message: 'You are now online! Using database.',
-        cssClass: "custom-toast",
-        duration: 1500,
-      });
-    
-      await toast.present();
+
     });
    }
 

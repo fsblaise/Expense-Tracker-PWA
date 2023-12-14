@@ -36,9 +36,10 @@ export class ExpenseService {
     }
   }
 
-  private async storeDataInIndexedDB(data: any) {
+  private async storeDataInIndexedDB(data: any, isOffline = false): Promise<void> {
     const objectStore = this.db.transaction('Expenses', 'readwrite').objectStore('Expenses');
-    const request = objectStore.put(data);
+    const needSync = isOffline;
+    const request = objectStore.put({ id: data.id, data, needSync });
 
     return new Promise<void>((resolve, reject) => {
       request.onsuccess = () => {
@@ -52,7 +53,23 @@ export class ExpenseService {
     });
   }
 
-  async getActiveMonths(userId: string) {
+  private async removeItemFromIndexedDB(key: string): Promise<void> {
+    const objectStore = this.db.transaction('Expenses', 'readwrite').objectStore('Expenses');
+
+    return new Promise((resolve, reject) => {
+      const request = objectStore.delete(key);
+
+      request.onsuccess = () => {
+        resolve();
+      };
+
+      request.onerror = (event: any) => {
+        reject(event.target.error);
+      };
+    });
+  }
+
+  async getActiveMonths(userId: string): Promise<any> {
     const isOnline = await firstValueFrom(this.network.getNetworkState());
     if (isOnline === 'online') {
       const res = await firstValueFrom(this.fstore.collection('Expenses').doc(userId).valueChanges());
@@ -61,7 +78,7 @@ export class ExpenseService {
     } else {
       console.log(isOnline);
       const objectStore = this.db.transaction('Expenses', 'readwrite').objectStore('Expenses');
-      
+
       const request = objectStore.get(userId);
 
       return new Promise<any>((resolve, reject) => {
@@ -81,7 +98,7 @@ export class ExpenseService {
     }
   }
 
-  async getExpense(month: string, userId: string) {
+  async getExpense(month: string, userId: string): Promise<Expense> {
     const isOnline = await firstValueFrom(this.network.getNetworkState());
     if (isOnline === 'online') {
       const res = await firstValueFrom(this.fstore
@@ -91,15 +108,15 @@ export class ExpenseService {
         .valueChanges());
 
       await this.storeDataInIndexedDB(res[0]);
-  
+
       return res[0];
     } else {
       const objectStore = this.db.transaction('Expenses', 'readwrite').objectStore('Expenses');
-      const results: any[] = [];
+      const results: Expense[] = [];
       const index = objectStore.index('userId_month');
       const request = index.openCursor(IDBKeyRange.only([userId, month]));
-    
-      return new Promise<any>((resolve,reject) => {
+
+      return new Promise<Expense>((resolve, reject) => {
         request.onsuccess = (event: any) => {
           const cursor = event.target.result;
           if (cursor) {
@@ -120,11 +137,7 @@ export class ExpenseService {
     }
   }
 
-  private async addExpenseToFirestore() {
-    
-  }
-
-  async addExpense(storeName: string, amount: number, userId: string) {
+  async addExpense(storeName: string, amount: number, userId: string): Promise<void> {
     const month = new Date().getMonth() + 1;
     const year = new Date().getFullYear();
     const monthStr = year + '-' + month;
@@ -138,26 +151,18 @@ export class ExpenseService {
 
     const isOnline = await firstValueFrom(this.network.getNetworkState());
     if (isOnline === 'online') {
-      const snapshot = await firstValueFrom(this.fstore
-        .collection<Expense>('Expenses', ref => ref
-          .where('month', '==', monthStr)
-          .where('userId', '==', userId))
-        .valueChanges()
-        .pipe(
-          map(docs => docs.length > 0 ? docs[0] : null)
-        )
-      );
-  
+      const snapshot = await this.getExpenseSnapshot(monthStr, userId);
+
       if (snapshot) {
         const docId = snapshot.id;
-  
+
         snapshot.summary.spent += amount;
+        snapshot.summary.transactionCount++;
         if (snapshot.transactions.filter(item => item.storeName === storeName).length === 0) {
           snapshot.summary.storeCount++;
         }
-        snapshot.summary.transactionCount++;
         snapshot.transactions.push(transaction)
-  
+
         await this.fstore.collection('Expenses').doc(docId).update({
           transactions: arrayUnion(transaction),
           summary: {
@@ -169,7 +174,7 @@ export class ExpenseService {
         await this.storeDataInIndexedDB(snapshot);
       } else {
         const id = await this.fstore.collection('Expenses').ref.doc().id;
-  
+
         const expense: Expense = {
           id,
           userId,
@@ -182,7 +187,7 @@ export class ExpenseService {
             transactionCount: 1
           }
         };
-  
+
         await this.fstore.collection('Expenses').doc(id).set(expense);
         await this.fstore.collection('Expenses').doc(userId).update({
           activeMonths: arrayUnion(monthStr),
@@ -203,11 +208,58 @@ export class ExpenseService {
           transactionCount: 1
         }
       };
-      await this.storeDataInIndexedDB(expense);
+      await this.storeDataInIndexedDB(expense, true);
     }
   }
 
-  async doOcr(input: ElementRef<HTMLInputElement>) {
+  private async getExpenseSnapshot(month: string, userId: string): Promise<Expense | null> {
+    return await firstValueFrom(this.fstore
+      .collection<Expense>('Expenses', ref => ref
+        .where('month', '==', month)
+        .where('userId', '==', userId))
+      .valueChanges()
+      .pipe(
+        map(docs => docs.length > 0 ? docs[0] : null)
+      )
+    );
+  }
+
+  async mergeExpenses(expense: Expense): Promise<void> {
+    const snapshot = await this.getExpenseSnapshot(expense.month, expense.userId);
+
+    if (snapshot) {
+      const docId = snapshot.id;
+
+      snapshot.summary.spent += expense.summary.spent;
+      snapshot.summary.transactionCount += expense.summary.transactionCount;
+      for (let transaction of expense.transactions) {
+        if (snapshot.transactions.filter(item => item.storeName === transaction.storeName).length === 0) {
+          snapshot.summary.storeCount++;
+        }
+        snapshot.transactions.push(transaction);
+      }
+
+      await this.fstore.collection('Expenses').doc(docId).update({
+        transactions: snapshot.transactions,
+        summary: {
+          spent: snapshot.summary.spent,
+          storeCount: snapshot.summary.storeCount,
+          transactionCount: snapshot.summary.transactionCount
+        },
+      });
+      // delete the current expense from IDB
+      await this.removeItemFromIndexedDB(expense.id);
+      await this.storeDataInIndexedDB(snapshot);
+    } else {
+      // upload the new month's expense and update the activeMonths
+      await this.fstore.collection('Expenses').doc(expense.id).set(expense);
+      await this.fstore.collection('Expenses').doc(expense.userId).update({
+        activeMonths: arrayUnion(expense.month),
+      });
+    }
+  }
+
+  async doOcr(input: ElementRef<HTMLInputElement>): Promise<Object | null> {
     const inputEl = input.nativeElement;
     if (inputEl.files && inputEl.files.length > 0) {
       const file = inputEl.files[0];

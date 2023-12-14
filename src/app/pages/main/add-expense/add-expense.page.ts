@@ -1,3 +1,4 @@
+import { Transaction } from './../../../shared/models/transaction.model';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -9,6 +10,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { DialogComponent } from 'src/app/shared/components/dialog/dialog.component';
 import { ExpenseService } from 'src/app/shared/services/expense.service';
 import { getAddExpenseForm } from 'src/app/shared/forms/add-expense.form';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'app-add-expense',
@@ -25,6 +27,7 @@ import { getAddExpenseForm } from 'src/app/shared/forms/add-expense.form';
   imports: [IonicModule, CommonModule, FormsModule, DialogComponent, ReactiveFormsModule]
 })
 export class AddExpensePage implements OnInit, OnDestroy {
+  user: firebase.default.User | null;
   workerPromise: Promise<Tesseract.Worker>;
   worker: Tesseract.Worker;
   @ViewChild('canvas') canvasRef!: ElementRef;
@@ -42,7 +45,7 @@ export class AddExpensePage implements OnInit, OnDestroy {
   addExpenseForm: FormGroup = getAddExpenseForm();
 
 
-  constructor(private expenseService: ExpenseService) {
+  constructor(private expenseService: ExpenseService, private authService: AuthService) {
     this.workerPromise = createWorker("hun", 1, {
       logger: (m) => {
         console.log(m)
@@ -56,6 +59,7 @@ export class AddExpensePage implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    this.user = await this.authService.getLoggedInUser();
     this.worker = await this.workerPromise;
     this.worker.setParameters({
       // tessedit_char_whitelist: 'öszenÖBbakárty0123456789',
@@ -67,10 +71,13 @@ export class AddExpensePage implements OnInit, OnDestroy {
 
   async addExpense(type: 'form' | 'ocr') {
     if (type === 'form') {
-      console.log(this.addExpenseForm.get('storeName')?.value);
-      console.log(this.addExpenseForm.get('amount')?.value);
-      this.expenseService.addExpense({},'asd');
+      this.expenseService.addExpense(
+        this.addExpenseForm.get('storeName')?.value,
+        Number(this.addExpenseForm.get('amount')?.value),
+        this.user?.uid as string
+      );
     } else {
+
 
     }
   }
@@ -78,7 +85,7 @@ export class AddExpensePage implements OnInit, OnDestroy {
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
   async doOCR() {
     if (this.fileInput.nativeElement.files) {
-      if(this.online) {
+      if (this.online) {
         this.processing = true;
         const response = await this.expenseService.doOcr(this.fileInput);
         console.log(response);

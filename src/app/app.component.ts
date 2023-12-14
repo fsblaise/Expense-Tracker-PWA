@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { Component, OnInit } from '@angular/core';
+import { IonApp, IonRouterOutlet, ToastController } from '@ionic/angular/standalone';
 import { HeaderComponent } from './shared/components/header/header.component';
 import {  Router, RouterOutlet } from '@angular/router';
 import { NavigationComponent } from './shared/components/navigation/navigation.component';
 import { CommonModule } from '@angular/common';
+import { SwUpdate } from '@angular/service-worker';
+import { NetworkService } from './shared/services/network.service';
 
 
 @Component({
@@ -20,9 +22,17 @@ import { CommonModule } from '@angular/common';
       CommonModule,
     ]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   isColored = false;
-  constructor(protected router: Router) {}
+
+  constructor(protected router: Router,
+              private swUpdate: SwUpdate,
+              private network: NetworkService,
+              private toastController: ToastController) {
+    
+  }
+
+  ngOnInit(): void { }
 
   onScroll(event: CustomEvent) {
     if (this.router.url === '/' || this.router.url === '/welcome') {

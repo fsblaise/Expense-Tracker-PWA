@@ -122,3 +122,16 @@ ion-card {
 .ion-valid.sc-ion-input-md-h {
     --highlight-color: var(--ion-color-primary);
 }
+
+.custom-toast {
+    --border-radius: 12px;
+    --box-shadow: none;
+    --max-width: max-content;
+    text-align: center;
+    --background: var(--ion-color-tertiary-tint);
+    --color: var(--ion-color-foreground);
+}
+
+.custom-toast::part(container){
+    padding: 0 32px;
+}

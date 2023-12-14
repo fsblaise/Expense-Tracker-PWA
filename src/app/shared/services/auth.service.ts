@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { firstValueFrom, take } from 'rxjs';
+import { NetworkService } from './network.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-  constructor(private auth: AngularFireAuth, private store: AngularFirestore) { }
+  constructor(private auth: AngularFireAuth, private store: AngularFirestore, private network: NetworkService) { }
 
   async signUp(email: string, password: string, fullName: string) {
     try {

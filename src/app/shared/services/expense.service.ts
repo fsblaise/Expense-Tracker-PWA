@@ -137,6 +137,18 @@ export class ExpenseService {
     }
   }
 
+  private async getExpenseSnapshot(month: string, userId: string): Promise<Expense | null> {
+    return await firstValueFrom(this.fstore
+      .collection<Expense>('Expenses', ref => ref
+        .where('month', '==', month)
+        .where('userId', '==', userId))
+      .valueChanges()
+      .pipe(
+        map(docs => docs.length > 0 ? docs[0] : null)
+      )
+    );
+  }
+
   async addExpense(storeName: string, amount: number, userId: string): Promise<void> {
     const month = new Date().getMonth() + 1;
     const year = new Date().getFullYear();
@@ -212,18 +224,6 @@ export class ExpenseService {
     }
   }
 
-  private async getExpenseSnapshot(month: string, userId: string): Promise<Expense | null> {
-    return await firstValueFrom(this.fstore
-      .collection<Expense>('Expenses', ref => ref
-        .where('month', '==', month)
-        .where('userId', '==', userId))
-      .valueChanges()
-      .pipe(
-        map(docs => docs.length > 0 ? docs[0] : null)
-      )
-    );
-  }
-
   async mergeExpenses(expense: Expense): Promise<void> {
     const snapshot = await this.getExpenseSnapshot(expense.month, expense.userId);
 
@@ -256,6 +256,13 @@ export class ExpenseService {
       await this.fstore.collection('Expenses').doc(expense.userId).update({
         activeMonths: arrayUnion(expense.month),
       });
+    }
+  }
+
+  async addGuest() {
+    const isOnline = await firstValueFrom(this.network.getNetworkState());
+    if (isOnline === 'online') {
+      
     }
   }
 

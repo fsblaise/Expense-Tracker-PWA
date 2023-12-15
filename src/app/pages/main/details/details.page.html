@@ -20,7 +20,33 @@
              (click)="nextMonth()" color="primary"></ion-icon>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf="expense && !loading" id="table-summary" class="ion-padding-vertical" [@slideInOut]="currentMonthIndex">
+        <ion-row *ngIf="expense && !loading" class="ion-justify-content-center ion-align-items-center table-summary" [@slideInOut]="currentMonthIndex">
+          <ion-col size="4">
+            <span>Number of guests: <strong>{{expense.guests ? expense.guests.length : 0}}</strong></span>
+          </ion-col>
+          <ion-col size="4">
+            <span *ngIf="expense.guests" id="guest-names"><strong>Name(s) of guest(s)</strong></span>
+            <span *ngIf="!expense.guests"><strong>There are no guests.</strong></span>
+            <ion-popover *ngIf="expense.guests" id="names-popover" mode="ios" trigger="guest-names" triggerAction="hover">
+              <ng-template>
+                <ion-content class="ion-padding">
+                  <ion-list mode="ios" style="margin: 0" inset="true" lines="full">
+                    <ion-item *ngFor="let guest of expense.guests">
+                      <ion-label style="text-align: center;">{{ guest.fullName }}</ion-label>
+                    </ion-item>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+          </ion-col>
+          <ion-col size="4">
+            <ion-button id="add-button" shape="round" fill="clear" color="tertiary" style="font-weight: 700;">
+              <ion-icon name="person-add"></ion-icon>
+              <span style="margin-left: 5px;">Add guest</span>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="expense && !loading" class="ion-padding-vertical table-summary" [@slideInOut]="currentMonthIndex">
           <ion-col>
             <span>Total money spent: <strong>{{expense.summary.spent}}</strong></span>
           </ion-col>

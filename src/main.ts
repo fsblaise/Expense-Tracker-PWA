@@ -14,6 +14,7 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { AngularFireModule } from '@angular/fire/compat'
 import { provideHttpClient } from "@angular/common/http";
+import { IonicModule } from '@ionic/angular';
 
 
 if (environment.production) {
@@ -25,6 +26,7 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes),
+    importProvidersFrom(IonicModule.forRoot({})),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000'

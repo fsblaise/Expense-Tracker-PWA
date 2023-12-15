@@ -65,8 +65,15 @@ ion-col {
     width: 100%;
 }
 
-#table-summary {
+.table-summary {
+    height: 48px;
+}
+
+.table-summary:first-of-type {
     border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.table-summary:last-of-type {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
@@ -78,4 +85,14 @@ ion-col {
         background-color: rgba(var(--ion-color-primary-shade-rgb), 0.3);
         font-weight: 700;
     }
+}
+
+#names-popover .inner-scroll {
+    padding: 0 !important;
+}
+
+#add-button {
+    // height: 21px;
+    // min-height: 21px;
+    margin: 0;
 }

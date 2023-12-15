@@ -54,3 +54,9 @@ ion-button {
         opacity: 80%;
     }
 }
+
+@media (max-width: 575px) {
+    ion-card-content {
+        padding: 48px 32px;
+    }
+}

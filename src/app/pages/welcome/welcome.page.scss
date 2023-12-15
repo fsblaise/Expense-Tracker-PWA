@@ -45,3 +45,29 @@ ion-card-content {
         font-size: 15px;
     }
 }
+
+@media (max-width: 575px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    .intro-title {
+        margin-top: 64px;
+        font-size: var(--md-sys-typescale-display-small-font-size);
+        margin-left: 24px;
+    }
+    #welcome-card {
+        padding: 25px 0;
+        h1 {
+            font-size: 64px;
+        }
+        h3 {
+            font-size: var(--md-sys-typescale-headline-small-font-size);
+            margin-bottom: 25px;
+        }
+        ion-button {
+            width: 150px;
+            height: 40px;
+            font-size: 16px;
+        }
+    }
+}

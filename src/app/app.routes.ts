@@ -23,13 +23,13 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/main/statements',
+        redirectTo: '/main/add-expense',
         pathMatch: 'full'
       },
-      {
-        path: 'statements',
-        loadComponent: () => import('./pages/main/statements/statements.page').then( m => m.StatementsPage)
-      },
+      // {
+      //   path: 'statements',
+      //   loadComponent: () => import('./pages/main/statements/statements.page').then( m => m.StatementsPage)
+      // },
       {
         path: 'add-expense',
         loadComponent: () => import('./pages/main/add-expense/add-expense.page').then( m => m.AddExpensePage)

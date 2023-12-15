@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -6,25 +6,31 @@ import { Expense } from 'src/app/shared/models/expense.model';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { ExpenseService } from 'src/app/shared/services/expense.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { DialogComponent } from "../../../shared/components/dialog/dialog.component";
 
 @Component({
-  selector: 'app-details',
-  templateUrl: './details.page.html',
-  styleUrls: ['./details.page.scss'],
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
-  animations: [
-    trigger('slideInOut', [
-      transition(':increment', [
-        style({ transform: 'translateX(100%)' }),
-        animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
-      ]),
-      transition(':decrement', [
-        style({ transform: 'translateX(-100%)' }),
-        animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
-      ]),
-    ]),
-  ],
+    selector: 'app-details',
+    templateUrl: './details.page.html',
+    styleUrls: ['./details.page.scss'],
+    standalone: true,
+    animations: [
+        trigger('slideInOut', [
+            transition(':increment', [
+                style({ transform: 'translateX(100%)' }),
+                animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
+            ]),
+            transition(':decrement', [
+                style({ transform: 'translateX(-100%)' }),
+                animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
+            ]),
+        ]),
+        trigger('openClose', [
+            state('true', style({ height: '*' })),
+            state('false', style({ height: '0px' })),
+            transition('false <=> true', [animate(300)])
+        ])
+    ],
+    imports: [IonicModule, CommonModule, FormsModule, DialogComponent]
 })
 export class DetailsPage implements OnInit {
   expense: Expense;
@@ -37,10 +43,15 @@ export class DetailsPage implements OnInit {
   activeMonths: string[];
   loading = false;
   animationState: string = 'current'; // Initial state
+  small = false;
+  guestsOpened = false;
+  summaryOpened = false;
+  dateOpened : boolean[] = [];
 
   constructor(private authService: AuthService, private expenseService: ExpenseService) { }
 
   async ngOnInit() {
+    this.onResize('');
     this.loading = true;
     this.user = await this.authService.getLoggedInUser();
     console.log('getActiveMonth on details page')
@@ -54,6 +65,15 @@ export class DetailsPage implements OnInit {
     console.log(this.user?.uid as string);
     this.expense = await this.expenseService.getExpense(this.activeMonths[this.currentMonthIndex], this.user?.uid as string);
     this.loading = false;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    if (window.innerWidth < 768) {
+      this.small = true;
+    } else {
+      this.small = false;
+    }
   }
 
   // uj otlet, technikai doksi az expensesbe
@@ -90,6 +110,12 @@ export class DetailsPage implements OnInit {
       this.expense = await this.expenseService.getExpense(this.activeMonths[this.currentMonthIndex], this.user?.uid as string);
     }
     // firebase call with filter to "year-monthIndex" + userId
+  }
+
+  openDate(i: number) {
+    this.dateOpened[i] = true;
+    console.log(this.dateOpened[i]);
+    console.log(i);
   }
 
 }

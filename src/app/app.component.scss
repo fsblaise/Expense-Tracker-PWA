@@ -1,16 +1,32 @@
-#sidenav {
+.sidenav {
     display: flex;
     width: 100%;
     height: 100%;
 
-    #drawer {
+    .drawer {
         z-index: 10;
         position: relative;
     }
 
-    #sidenav-content {
+    .sidenav-content {
         width: 100%;
         height: 100%;
+    }
+}
+
+.tab-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column-reverse;
+    .tabs {
+        z-index: 10;
+    }   
+    .tab-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 }
 
@@ -20,4 +36,11 @@
 
 .no-ml {
     margin-left: 0px;
+}
+
+@media (max-width: 575px) {
+    .ml {
+        margin-left: unset;
+        margin-bottom: 57px;
+    }
 }

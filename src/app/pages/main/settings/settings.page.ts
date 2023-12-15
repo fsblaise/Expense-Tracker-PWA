@@ -61,9 +61,4 @@ export class SettingsPage implements OnInit {
       await this.authService.updateUser(this.user);
     }
   }
-
-  deleteProfile() {
-
-  }
-
 }

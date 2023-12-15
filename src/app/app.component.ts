@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet, ToastController } from '@ionic/angular/standalone';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { Router, RouterOutlet } from '@angular/router';
@@ -29,6 +29,7 @@ export class AppComponent implements OnInit {
   isColored = false;
   subscription: Subscription;
   db: IDBDatabase;
+  small = false;
 
   constructor(protected router: Router,
               private swUpdate: SwUpdate,
@@ -38,6 +39,7 @@ export class AppComponent implements OnInit {
               private toastController: ToastController) { }
 
   ngOnInit(): void {
+    this.onResize('');
     // Manifest állományok összevetése 3 másodpercenként
     this.subscription = interval(3000).subscribe(() => {
 
@@ -54,7 +56,15 @@ export class AppComponent implements OnInit {
         }
       })
     })
+  }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    if (window.innerWidth < 576) {
+      this.small = true;
+    } else {
+      this.small = false;
+    }
   }
 
   onScroll(event: CustomEvent) {

@@ -1,11 +1,11 @@
-<ion-col class="nav-container">
-  <div class="nav-button ion-activatable" routerLink="/main/statements">
+<ion-col class="nav-container ion-hide-sm-down">
+  <!-- <div class="nav-button ion-activatable" routerLink="/main/statements">
     <div class="icon-wrapper ripple-parent" [class.active]="router.url.includes('statements')">
       <ion-icon name="stats-chart-outline"></ion-icon>
       <ion-ripple-effect type="unbounded" class="ripple"></ion-ripple-effect>
     </div>
     <small class="text">Statements</small>
-  </div>
+  </div> -->
   <div class="nav-button ion-activatable" routerLink="/main/add-expense">
     <div class="icon-wrapper ripple-parent" [class.active]="router.url.includes('add-expense')">
       <ion-icon name="add"></ion-icon>
@@ -35,3 +35,34 @@
     <small class="text">Logout</small>
   </div>
 </ion-col>
+
+<ion-row class="ion-hide-sm-up tab-bar ion-justify-content-evenly ion-align-items-center">
+  <div class="nav-button ion-activatable" routerLink="/main/add-expense">
+    <div class="icon-wrapper ripple-parent" [class.active]="router.url.includes('add-expense')">
+      <ion-icon name="add"></ion-icon>
+      <ion-ripple-effect type="unbounded" class="ripple"></ion-ripple-effect>
+    </div>
+    <small class="text">Add</small>
+  </div>
+  <div class="nav-button ion-activatable" routerLink="/main/details">
+    <div class="icon-wrapper ripple-parent" [class.active]="router.url.includes('details')">
+      <ion-icon name="document-text-outline"></ion-icon>
+      <ion-ripple-effect type="unbounded" class="ripple"></ion-ripple-effect>
+    </div>
+    <small class="text">Details</small>
+  </div>
+  <div class="nav-button ion-activatable" routerLink="/main/settings">
+    <div class="icon-wrapper ripple-parent" [class.active]="router.url.includes('settings')">
+      <ion-icon name="settings-outline"></ion-icon>
+      <ion-ripple-effect type="unbounded" class="ripple"></ion-ripple-effect>
+    </div>
+    <small class="text">Settings</small>
+  </div>
+  <div class="nav-button ion-activatable" (click)="logOut()">
+    <div class="icon-wrapper ripple-parent">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <ion-ripple-effect type="unbounded" class="ripple"></ion-ripple-effect>
+    </div>
+    <small class="text">Logout</small>
+  </div>
+</ion-row>

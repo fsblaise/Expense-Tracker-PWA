@@ -8,6 +8,11 @@
     background-color: rgba(var(--ion-color-tertiary-rgb), 0.1);
 }
 
+.tab-bar {
+    height: 57px;
+    background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+}
+
 ion-icon {
     width: 32px;
     height: 32px;
@@ -20,6 +25,12 @@ ion-icon {
     cursor: pointer;
     color: var(--ion-color-tertiary-shade);
     user-select: none;
+}
+
+@media (max-width: 575px) {
+    .nav-button {
+        width: 48px;
+    }
 }
 
 .nav-button:hover {

@@ -20,42 +20,102 @@
              (click)="nextMonth()" color="primary"></ion-icon>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf="expense && !loading" class="ion-justify-content-center ion-align-items-center table-summary" [@slideInOut]="currentMonthIndex">
-          <ion-col size="4">
-            <span>Number of guests: <strong>{{expense.guests ? expense.guests.length : 0}}</strong></span>
-          </ion-col>
-          <ion-col size="4">
-            <span *ngIf="expense.guests" id="guest-names"><strong>Name(s) of guest(s)</strong></span>
-            <span *ngIf="!expense.guests"><strong>There are no guests.</strong></span>
-            <ion-popover *ngIf="expense.guests" id="names-popover" mode="ios" trigger="guest-names" triggerAction="hover">
-              <ng-template>
-                <ion-content class="ion-padding">
-                  <ion-list mode="ios" style="margin: 0" inset="true" lines="full">
-                    <ion-item *ngFor="let guest of expense.guests">
-                      <ion-label style="text-align: center;">{{ guest.fullName }}</ion-label>
-                    </ion-item>
-                  </ion-list>
-                </ion-content>
-              </ng-template>
-            </ion-popover>
-          </ion-col>
-          <ion-col size="4">
-            <ion-button id="add-button" shape="round" fill="clear" color="tertiary" style="font-weight: 700;">
-              <ion-icon name="person-add"></ion-icon>
-              <span style="margin-left: 5px;">Add guest</span>
-            </ion-button>
-          </ion-col>
+        <ion-row *ngIf="expense && !loading" class="ion-justify-content-center ion-align-items-center" id="guests" [@slideInOut]="currentMonthIndex">
+          <ng-container *ngIf="!small">
+            <ion-col size="4">
+              <span>Number of guests: <strong>{{expense.guests ? expense.guests.length : 0}}</strong></span>
+            </ion-col>
+            <ion-col size="4">
+              <span *ngIf="expense.guests" id="guest-names"><strong>Name(s) of guest(s)</strong></span>
+              <span *ngIf="!expense.guests"><strong>There are no guests.</strong></span>
+              <ion-popover *ngIf="expense.guests" class="names-popover" mode="ios" trigger="guest-names" triggerAction="hover">
+                <ng-template>
+                  <ion-content class="ion-padding">
+                    <ion-list mode="ios" style="margin: 0" inset="true" lines="full">
+                      <ion-item *ngFor="let guest of expense.guests">
+                        <ion-label style="text-align: center;">{{ guest.fullName }}</ion-label>
+                      </ion-item>
+                    </ion-list>
+                  </ion-content>
+                </ng-template>
+              </ion-popover>
+            </ion-col>
+            <ion-col size="4">
+              <ion-button class="add-button" shape="round" fill="clear" color="tertiary" style="font-weight: 700;">
+                <ion-icon name="person-add"></ion-icon>
+                <span style="margin-left: 5px;">Add guest</span>
+              </ion-button>
+            </ion-col>
+          </ng-container>
+          <ng-container *ngIf="small">
+            <ion-col size="12">
+              <ion-row>
+                <ion-button shape="round" fill="clear" color="tertiary" style="font-weight: 700;" (click)="guestsOpened = !guestsOpened">Guests</ion-button>
+              </ion-row>
+              <ion-row class="ion-justify-content-center ion-align-items-center" [@openClose]="guestsOpened ? true : false" id="guests-accordion">
+                <ion-col size="12" style="gap: 5px;">
+                  <ion-row>
+                    <span>Number of guests: <strong>{{expense.guests ? expense.guests.length : 0}}</strong></span>
+                  </ion-row>
+                  <ion-row>
+                    <span *ngIf="expense.guests" id="guest-names"><strong>Name(s) of guest(s)</strong></span>
+                    <span *ngIf="!expense.guests"><strong>There are no guests.</strong></span>
+                    <ion-popover *ngIf="expense.guests" class="names-popover" mode="ios" trigger="guest-names" triggerAction="hover">
+                      <ng-template>
+                        <ion-content class="ion-padding">
+                          <ion-list mode="ios" style="margin: 0" inset="true" lines="full">
+                            <ion-item *ngFor="let guest of expense.guests">
+                              <ion-label style="text-align: center;">{{ guest.fullName }}</ion-label>
+                            </ion-item>
+                          </ion-list>
+                        </ion-content>
+                      </ng-template>
+                    </ion-popover>
+                  </ion-row>
+                  <ion-row style="margin-bottom: 5px;">
+                    <ion-button class="add-button" shape="round" fill="clear" color="tertiary" style="font-weight: 700; min-height: 21px; height: 21px;">
+                      <ion-icon name="person-add"></ion-icon>
+                      <span style="margin-left: 5px;">Add guest</span>
+                    </ion-button>
+                  </ion-row>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+            
+          </ng-container>
         </ion-row>
-        <ion-row *ngIf="expense && !loading" class="ion-padding-vertical table-summary" [@slideInOut]="currentMonthIndex">
-          <ion-col>
-            <span>Total money spent: <strong>{{expense.summary.spent}}</strong></span>
-          </ion-col>
-          <ion-col>
-            <span>Stores visited: <strong>{{expense.summary.storeCount}}</strong></span>
-          </ion-col>
-          <ion-col>
-            <span>Transactions completed: <strong>{{expense.summary.transactionCount}}</strong></span>
-          </ion-col>
+        <ion-row *ngIf="expense && !loading" class="ion-justify-content-center ion-align-items-center" id="summary" [@slideInOut]="currentMonthIndex">
+          <ng-container *ngIf="!small">
+            <ion-col>
+              <span>Total money spent: <strong>{{expense.summary.spent}}</strong></span>
+            </ion-col>
+            <ion-col>
+              <span>Stores visited: <strong>{{expense.summary.storeCount}}</strong></span>
+            </ion-col>
+            <ion-col>
+              <span>Transactions completed: <strong>{{expense.summary.transactionCount}}</strong></span>
+            </ion-col>
+          </ng-container>
+          <ng-container *ngIf="small">
+            <ion-col size="12">
+              <ion-row>
+                <ion-button shape="round" fill="clear" color="tertiary" style="font-weight: 700;" (click)="summaryOpened = !summaryOpened">Summary</ion-button>
+              </ion-row>
+              <ion-row class="ion-justify-content-center ion-align-items-center" [@openClose]="summaryOpened ? true : false" id="summary-accordion">
+                <ion-col size="12" style="gap: 5px;">
+                  <ion-row>
+                    <span>Total money spent: <strong>{{expense.summary.spent}}</strong></span>
+                  </ion-row>
+                  <ion-row>
+                    <span>Stores visited: <strong>{{expense.summary.storeCount}}</strong></span>
+                  </ion-row>
+                  <ion-row style="margin-bottom: 5px;">
+                    <span>Transactions completed: <strong>{{expense.summary.transactionCount}}</strong></span>
+                  </ion-row>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+          </ng-container>
         </ion-row>
         <ion-row *ngIf="expense && !loading" id="table-body" [@slideInOut]="currentMonthIndex">
           <ion-col class="ion-no-padding">
@@ -64,10 +124,14 @@
               <ion-col size="4">Amount (Ft)</ion-col>
               <ion-col size="4">Date</ion-col>
             </ion-row>
-            <ion-row *ngFor="let transaction of expense.transactions">
+            <ion-row *ngFor="let transaction of expense.transactions; let i = index">
               <ion-col size="4">{{transaction.storeName}}</ion-col>
               <ion-col size="4">{{transaction.amount}}</ion-col>
-              <ion-col size="4">{{transaction.timestamp}}</ion-col>
+              <ion-col size="4">
+                <span *ngIf="!small">{{transaction.timestamp}}</span>
+                <ion-icon *ngIf="small" (click)="openDate(i)" name="calendar-outline"></ion-icon>
+                <app-dialog type="basic" title="Date" [msg]="transaction.timestamp" [isOpen]="dateOpened[i]" (closeEvent)="dateOpened[i] = false"></app-dialog>
+              </ion-col>
             </ion-row>
           </ion-col>
         </ion-row>

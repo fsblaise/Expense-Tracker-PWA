@@ -1,7 +1,7 @@
 <ion-app>
-  <div id="sidenav">
-    <app-navigation id="drawer" *ngIf="router.url.includes('main')"></app-navigation>
-    <div id="sidenav-content">
+  <div [ngClass]="small ? 'tab-wrapper' : 'sidenav'">
+    <app-navigation [ngClass]="small ? 'tabs' : 'drawer'" *ngIf="router.url.includes('main')"></app-navigation>
+    <div [ngClass]="small ? 'tab-content' : 'sidenav-content'">
       <app-header id="header" [isColored]="isColored"></app-header>
       <div id="content" (ionScroll)="onScroll($any($event))">
         <ion-router-outlet [ngClass]="router.url.includes('main') ? 'ml' : 'no-ml'"></ion-router-outlet>

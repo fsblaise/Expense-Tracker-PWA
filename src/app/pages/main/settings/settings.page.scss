@@ -74,6 +74,10 @@ ion-card-content {
     }
 }
 
+.profile-title, .expense-title {
+    margin-top: 64px;
+}
+
 #dark-mode-switch.toggle-checked::part(handle) {
     background-image: url('../../../../assets/icons/moon.svg');
     background-size: 80% 80%;
@@ -105,4 +109,40 @@ ion-card-content {
 .button-row {
     border-top: solid 1px rgba(0, 0, 0, 0.12);
     margin: 0 24px;
+}
+
+@media (max-width: 899px) {
+    ion-card {
+        padding: 0px !important;
+    }
+    #welcome-card {
+        padding: 50px 0 !important;
+    }
+}
+
+@media (max-width: 769px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    ion-card {
+        padding: 0 32px !important;
+    }
+    #welcome-card {
+        padding: 50px 0 !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .expense-title {
+        margin-top: 0 !important;
+    }
+    ion-card {
+        padding: 0px !important;
+    }
+    #welcome-card {
+        padding: 50px 0 !important;
+        h1 {
+            font-size: 64px;
+        }
+    } 
 }

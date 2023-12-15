@@ -10,7 +10,7 @@
   </ion-row>
   <div *ngIf="!loading" class="container">
     <ion-col>
-      <h1 style="margin-top: 64px;">Profile:</h1>
+      <h1 class="profile-title">Profile:</h1>
       <ion-card style="height: min-content;">
         <form [formGroup]="profileSettingsForm" (ngSubmit)="updateProfile()">
           <ion-card-content>
@@ -40,14 +40,12 @@
           <ion-row class="ion-align-items-center ion-justify-content-evenly button-row">
             <ion-button fill="clear" shape="round" style="font-weight: 700;" color="primary" type="submit">Save
               changes</ion-button>
-            <ion-button fill="clear" shape="round" style="font-weight: 700;" color="danger"
-              (click)="deleteProfile()">Delete profile</ion-button>
           </ion-row>
         </form>
       </ion-card>
     </ion-col>
     <ion-col>
-      <h1 style="margin-top: 64px;">Expenses:</h1>
+      <h1 class="expense-title">Expenses:</h1>
       <ion-card style="height: min-content;">
         <form [formGroup]="expenseSettingsForm" (ngSubmit)="updateExpenses()">
           <ion-card-content>

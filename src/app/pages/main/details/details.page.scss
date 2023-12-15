@@ -65,15 +65,13 @@ ion-col {
     width: 100%;
 }
 
-.table-summary {
-    height: 48px;
-}
-
-.table-summary:first-of-type {
+#guests {
+    min-height: 48px;
     border-top: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.table-summary:last-of-type {
+#summary {
+    min-height: 48px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
 
@@ -87,12 +85,22 @@ ion-col {
     }
 }
 
-#names-popover .inner-scroll {
+.names-popover .inner-scroll {
     padding: 0 !important;
 }
 
-#add-button {
+.add-button {
     // height: 21px;
     // min-height: 21px;
     margin: 0;
+}
+
+#guests-accordion, #summary-accordion {
+    overflow: hidden;
+}
+
+@media (max-width: 767px) {
+    #guests {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
 }

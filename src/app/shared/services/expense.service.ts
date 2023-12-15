@@ -17,18 +17,13 @@ export class ExpenseService {
   db: IDBDatabase;
 
   constructor(private http: HttpClient, private fstore: AngularFirestore, private network: NetworkService) {
-    const request = indexedDB.open('expense-tracker-db', 2);
+    const request = indexedDB.open('expense-tracker-db', 3);
     request.onerror = (event: any) => {
       console.error('Database error:', event.target.error);
     };
 
     request.onupgradeneeded = (event: any) => {
-      console.log('asd')
-      this.db = event.target.result;
-      const objectStore = this.db.createObjectStore('Expenses', {
-        keyPath: 'id',
-      });
-      objectStore.createIndex('userId_month', ['userId', 'month']);
+      console.log("Can't sync data, when there is no local database!");
     };
 
     request.onsuccess = (event: any) => {
@@ -72,20 +67,24 @@ export class ExpenseService {
   async getActiveMonths(userId: string): Promise<any> {
     const isOnline = await firstValueFrom(this.network.getNetworkState());
     if (isOnline === 'online') {
+      console.log('getExpense online');
+      console.log(userId);
       const res = await firstValueFrom(this.fstore.collection('Expenses').doc(userId).valueChanges());
       await this.storeDataInIndexedDB(res);
       return res;
     } else {
       console.log(isOnline);
+      console.log('getExpense offline');
+      console.log(userId);
       const objectStore = this.db.transaction('Expenses', 'readwrite').objectStore('Expenses');
 
       const request = objectStore.get(userId);
 
       return new Promise<any>((resolve, reject) => {
         request.onsuccess = (event: any) => {
-          const data = event.target.result;
-          if (data) {
-            resolve(data);
+          const item = event.target.result;
+          if (item) {
+            resolve(item.data);
           } else {
             resolve(null);
           }
@@ -101,6 +100,7 @@ export class ExpenseService {
   async getExpense(month: string, userId: string): Promise<Expense> {
     const isOnline = await firstValueFrom(this.network.getNetworkState());
     if (isOnline === 'online') {
+      console.log('getExpense online');
       const res = await firstValueFrom(this.fstore
         .collection<Expense>('Expenses', ref => ref
           .where('userId', '==', userId)
@@ -111,6 +111,7 @@ export class ExpenseService {
 
       return res[0];
     } else {
+      console.log('getExpense offline');
       const objectStore = this.db.transaction('Expenses', 'readwrite').objectStore('Expenses');
       const results: Expense[] = [];
       const index = objectStore.index('userId_month');
@@ -120,12 +121,13 @@ export class ExpenseService {
         request.onsuccess = (event: any) => {
           const cursor = event.target.result;
           if (cursor) {
-            const data = cursor.value;
-            if (data.userId === userId && data.month === month) {
-              results.push(data);
+            const item = cursor.value;
+            if (item.data.userId === userId && item.data.month === month) {
+              results.push(item.data);
             }
             cursor.continue();
           } else {
+            console.log(results);
             resolve(results[0]);
           }
         };
@@ -248,6 +250,7 @@ export class ExpenseService {
         },
       });
       // delete the current expense from IDB
+      // it's necessary since, the stored data has a different id, because of the merge.
       await this.removeItemFromIndexedDB(expense.id);
       await this.storeDataInIndexedDB(snapshot);
     } else {
@@ -256,6 +259,8 @@ export class ExpenseService {
       await this.fstore.collection('Expenses').doc(expense.userId).update({
         activeMonths: arrayUnion(expense.month),
       });
+      await this.removeItemFromIndexedDB(expense.id);
+      await this.storeDataInIndexedDB(expense);
     }
   }
 

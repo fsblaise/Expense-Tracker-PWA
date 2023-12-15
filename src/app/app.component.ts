@@ -8,6 +8,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { NetworkService } from './shared/services/network.service';
 import { SyncService } from './shared/services/sync.service';
 import { Subscription, interval } from 'rxjs';
+import { IDBService } from './shared/services/idb.service';
 
 
 @Component({
@@ -27,14 +28,14 @@ import { Subscription, interval } from 'rxjs';
 export class AppComponent implements OnInit {
   isColored = false;
   subscription: Subscription;
+  db: IDBDatabase;
 
   constructor(protected router: Router,
-    private swUpdate: SwUpdate,
-    private network: NetworkService,
-    private syncService: SyncService,
-    private toastController: ToastController) {
-
-  }
+              private swUpdate: SwUpdate,
+              private idbService: IDBService,
+              private network: NetworkService,
+              private syncService: SyncService,
+              private toastController: ToastController) { }
 
   ngOnInit(): void {
     // Manifest állományok összevetése 3 másodpercenként

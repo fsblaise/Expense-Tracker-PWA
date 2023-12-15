@@ -6,6 +6,7 @@ import { firstValueFrom, take } from 'rxjs';
 import { NetworkService } from './network.service';
 import { ExpenseService } from './expense.service';
 import { ToastController } from '@ionic/angular';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,8 +15,11 @@ export class SyncService {
   db: IDBDatabase;
   previousNetworkState: 'online' | 'offline' = 'online';
 
-  constructor(private expenseService: ExpenseService, private toastController: ToastController, private network: NetworkService) { 
-    const request = indexedDB.open('expense-tracker-db', 2);
+  constructor(private expenseService: ExpenseService,
+              private toastController: ToastController,
+              private network: NetworkService,
+              private auth: AuthService) { 
+    const request = indexedDB.open('expense-tracker-db', 3);
     request.onerror = (event: any) => {
       console.error('Database error:', event.target.error);
     };
@@ -44,12 +48,16 @@ export class SyncService {
       cssClass: "custom-toast",
     });
     await toast.present();
-    setTimeout(async () => {await toast.dismiss()}, 40000);
-    return new Promise(async (resolve, reject) => {
+    await this.syncExpenses();
+    await this.syncUsers();
+    await toast.dismiss();
+  }
+
+  async syncExpenses() {
+    return new Promise<void>(async (resolve, reject) => {
       if (!this.db) {
         console.log("Can't sync data, when there is no local database!");
         resolve();
-        await toast.dismiss();
         return;
       }
       const request = this.db.transaction('Expenses', 'readonly').objectStore('Expenses').openCursor();
@@ -59,7 +67,7 @@ export class SyncService {
         if (cursor) {
           const item = cursor.value;
     
-          if (item && item.needSync) {
+          if (item && item.needSync === true) {
             try {
               console.log('Synchronizing item:', item);
               // call merge function
@@ -68,23 +76,73 @@ export class SyncService {
             } catch (e) {
               console.error('Error during synchronization:', e);
               reject(e);
-              await toast.dismiss();
               return;
             }
           }
           // Move to the next item
-          cursor.continue();
+          try {
+            cursor.continue();
+          } catch {
+            resolve();
+          }
         } else {
           // No more items
           resolve();
-          await toast.dismiss();
         }
       };
     
       request.onerror = async (event: any) => {
         console.error('Error iterating through IndexedDB:', event.target.error);
         reject(event.target.error);
-        await toast.dismiss();
+      };
+      // TODO: Go through every expense, and check for the syncNeeded flag.
+      
+      //       When the app is offline, every insert (addExpense) should be marked with the syncNeeded flag
+      //       Once the app is online, call this method.
+    });
+  }
+
+  syncUsers() {
+    return new Promise<void>(async (resolve, reject) => {
+      if (!this.db) {
+        console.log("Can't sync data, when there is no local database!");
+        resolve();
+        return;
+      }
+      const request = this.db.transaction('Users', 'readonly').objectStore('Users').openCursor();
+      request.onsuccess = async (event: any) => {
+        const cursor = event.target.result;
+    
+        if (cursor) {
+          const item = cursor.value;
+    
+          if (item && item.needSync === true) {
+            try {
+              console.log('Synchronizing item:', item);
+              // call merge function
+              // this function also calls a fn that removes the item, since it will replace it with the new firebase data
+              await this.auth.syncUser(item.data);
+            } catch (e) {
+              console.error('Error during synchronization:', e);
+              reject(e);
+              return;
+            }
+          }
+          // Move to the next item
+          try {
+            cursor.continue();
+          } catch {
+            resolve();
+          }
+        } else {
+          // No more items
+          resolve();
+        }
+      };
+    
+      request.onerror = async (event: any) => {
+        console.error('Error iterating through IndexedDB:', event.target.error);
+        reject(event.target.error);
       };
       // TODO: Go through every expense, and check for the syncNeeded flag.
       

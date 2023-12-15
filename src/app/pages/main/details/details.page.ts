@@ -29,7 +29,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class DetailsPage implements OnInit {
   expense: Expense;
   // expenses: string[] = ['October','November','December'];
-  months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   currentMonthIndex = 0;
   month: number;
   year: number;
@@ -42,12 +42,16 @@ export class DetailsPage implements OnInit {
 
   async ngOnInit() {
     this.loading = true;
-    this.user = await this.authService.getLoggedInUser();    
+    this.user = await this.authService.getLoggedInUser();
+    console.log('getActiveMonth on details page')
     this.activeMonths = (await this.expenseService.getActiveMonths(this.user?.uid as string) as any).activeMonths;
-    
+
     this.month = new Date().getMonth();
     // firebase call with filter to "year-monthIndex" + userId
     this.currentMonthIndex = this.activeMonths.findIndex((value: string) => value.includes((this.month + 1).toString()));
+    console.log('details page');
+    console.log(this.activeMonths[this.currentMonthIndex]);
+    console.log(this.user?.uid as string);
     this.expense = await this.expenseService.getExpense(this.activeMonths[this.currentMonthIndex], this.user?.uid as string);
     this.loading = false;
   }
@@ -62,9 +66,11 @@ export class DetailsPage implements OnInit {
   // nem kellene bonyolult if else sem a next/prev metodusokhoz
 
   async nextMonth() {
-    if (this.currentMonthIndex < this.activeMonths.length-1) {
+    if (this.currentMonthIndex < this.activeMonths.length - 1) {
       this.month++;
       this.currentMonthIndex++;
+      console.log(this.activeMonths[this.currentMonthIndex]);
+      console.log(this.user?.uid as string);
       this.expense = await this.expenseService.getExpense(this.activeMonths[this.currentMonthIndex], this.user?.uid as string);
     }
     // if currentMonthIndex !== expenses.length - 1 : just change the index
@@ -79,6 +85,8 @@ export class DetailsPage implements OnInit {
     if (this.currentMonthIndex > 0) {
       this.month--;
       this.currentMonthIndex--;
+      console.log(this.activeMonths[this.currentMonthIndex]);
+      console.log(this.user?.uid as string);
       this.expense = await this.expenseService.getExpense(this.activeMonths[this.currentMonthIndex], this.user?.uid as string);
     }
     // firebase call with filter to "year-monthIndex" + userId

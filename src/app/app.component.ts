@@ -9,6 +9,7 @@ import { NetworkService } from './shared/services/network.service';
 import { SyncService } from './shared/services/sync.service';
 import { Subscription, interval } from 'rxjs';
 import { IDBService } from './shared/services/idb.service';
+import { Meta } from '@angular/platform-browser';
 
 
 @Component({
@@ -36,7 +37,8 @@ export class AppComponent implements OnInit {
               private idbService: IDBService,
               private network: NetworkService,
               private syncService: SyncService,
-              private toastController: ToastController) { }
+              private toastController: ToastController,
+              private meta: Meta) { }
 
   ngOnInit(): void {
     this.onResize('');
@@ -70,8 +72,12 @@ export class AppComponent implements OnInit {
   onScroll(event: CustomEvent) {
     if (this.router.url === '/' || this.router.url === '/welcome') {
       if (event.detail.scrollTop > 164) {
+        this.meta.updateTag({name: 'theme-color', content: '#d2e8d3'});
+
         this.isColored = true;
       } else {
+        this.meta.updateTag({name: 'theme-color', content: '#fbfdf7'});
+        
         this.isColored = false;
       }
     } else {

@@ -22,7 +22,7 @@ export class SettingsPage implements OnInit {
   
   constructor(private authService: AuthService) { }
 
-  async ngOnInit() {
+  async ngOnInit() {   
     this.loading = true;
     this.user = await this.authService.getLoggedInUserObj();
     if (this.user) {

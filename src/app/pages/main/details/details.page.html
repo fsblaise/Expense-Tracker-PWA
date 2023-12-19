@@ -6,6 +6,9 @@
       </ion-card-title>
     </ion-card-header>
     <ion-card-content>
+      <ion-row class="ion-justify-content-center ion-align-items-center">
+        <h3 *ngIf="!activeMonths && !loading">There are no expense data available.</h3>
+      </ion-row>
       <ion-grid *ngIf="activeMonths && !loading" id="table-grid" class="ion-no-padding">
         <ion-row id="table-head">
           <ion-col size="4">
@@ -26,8 +29,8 @@
               <span>Number of guests: <strong>{{expense.guests ? expense.guests.length : 0}}</strong></span>
             </ion-col>
             <ion-col size="4">
-              <span *ngIf="expense.guests" id="guest-names"><strong>Name(s) of guest(s)</strong></span>
-              <span *ngIf="!expense.guests"><strong>There are no guests.</strong></span>
+              <span *ngIf="expense.guests && expense.guests.length > 0" id="guest-names"><strong>Name(s) of guest(s)</strong></span>
+              <span *ngIf="!expense.guests || expense.guests.length === 0"><strong>There are no guests.</strong></span>
               <ion-popover *ngIf="expense.guests" class="names-popover" mode="ios" trigger="guest-names" triggerAction="hover">
                 <ng-template>
                   <ion-content class="ion-padding">

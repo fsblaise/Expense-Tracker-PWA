@@ -5,12 +5,12 @@
     gap: 35px;
     padding: 128px 16px 0 16px;
     width: 90px;
-    background-color: rgba(var(--ion-color-tertiary-rgb), 0.1);
+    background-color: rgba(var(--ion-color-tertiary-rgb), 0.05);
 }
 
 .tab-bar {
     height: 57px;
-    background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+    background: rgba(var(--ion-color-tertiary-rgb), 0.05);
 }
 
 ion-icon {
@@ -23,7 +23,7 @@ ion-icon {
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    color: var(--ion-color-tertiary-shade);
+    color: var(--ion-color-dark);
     user-select: none;
 }
 

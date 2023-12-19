@@ -54,6 +54,11 @@ export class SyncService {
   }
 
   async syncExpenses() {
+    const user = await this.auth.getLoggedInUser();
+    if(!user) {
+      return;
+    }
+
     return new Promise<void>(async (resolve, reject) => {
       if (!this.db) {
         console.log("Can't sync data, when there is no local database!");
@@ -67,7 +72,7 @@ export class SyncService {
         if (cursor) {
           const item = cursor.value;
     
-          if (item && item.needSync === true) {
+          if (item && item.needSync === true && item.data.userId === user.uid && item.id !== user.uid) {
             try {
               console.log('Synchronizing item:', item);
               // call merge function
@@ -79,14 +84,12 @@ export class SyncService {
               return;
             }
           }
-          // Move to the next item
           try {
             cursor.continue();
           } catch {
             resolve();
           }
         } else {
-          // No more items
           resolve();
         }
       };
@@ -95,14 +98,63 @@ export class SyncService {
         console.error('Error iterating through IndexedDB:', event.target.error);
         reject(event.target.error);
       };
-      // TODO: Go through every expense, and check for the syncNeeded flag.
-      
-      //       When the app is offline, every insert (addExpense) should be marked with the syncNeeded flag
-      //       Once the app is online, call this method.
     });
   }
 
-  syncUsers() {
+  async syncActiveMonths() {
+    const user = await this.auth.getLoggedInUser();
+    if(!user) {
+      return;
+    }
+
+    return new Promise<void>(async (resolve, reject) => {
+      if (!this.db) {
+        console.log("Can't sync data, when there is no local database!");
+        resolve();
+        return;
+      }
+      const request = this.db.transaction('Expenses', 'readonly').objectStore('Expenses').openCursor();
+      request.onsuccess = async (event: any) => {
+        const cursor = event.target.result;
+    
+        if (cursor) {
+          const item = cursor.value;
+    
+          if (item && item.needSync === true && item.id === user.uid) {
+            try {
+              console.log('Synchronizing item:', item);
+              // call merge function
+              // this function also calls a fn that removes the item, since it will replace it with the new firebase data
+              await this.expenseService.mergeActiveMonths(item.data);
+            } catch (e) {
+              console.error('Error during synchronization:', e);
+              reject(e);
+              return;
+            }
+          }
+          try {
+            cursor.continue();
+          } catch {
+            resolve();
+          }
+        } else {
+          resolve();
+        }
+      };
+    
+      request.onerror = async (event: any) => {
+        console.error('Error iterating through IndexedDB:', event.target.error);
+        reject(event.target.error);
+      };
+    });
+  }
+
+  async syncUsers() {
+    const user = await this.auth.getLoggedInUser();
+    if(!user) {
+      return;
+    }
+
     return new Promise<void>(async (resolve, reject) => {
       if (!this.db) {
         console.log("Can't sync data, when there is no local database!");
@@ -116,7 +168,7 @@ export class SyncService {
         if (cursor) {
           const item = cursor.value;
     
-          if (item && item.needSync === true) {
+          if (item && item.needSync === true && item.id === user.uid) {
             try {
               console.log('Synchronizing item:', item);
               // call merge function
@@ -128,14 +180,12 @@ export class SyncService {
               return;
             }
           }
-          // Move to the next item
           try {
             cursor.continue();
           } catch {
             resolve();
           }
         } else {
-          // No more items
           resolve();
         }
       };
@@ -144,10 +194,6 @@ export class SyncService {
         console.error('Error iterating through IndexedDB:', event.target.error);
         reject(event.target.error);
       };
-      // TODO: Go through every expense, and check for the syncNeeded flag.
-      
-      //       When the app is offline, every insert (addExpense) should be marked with the syncNeeded flag
-      //       Once the app is online, call this method.
     });
   }
 

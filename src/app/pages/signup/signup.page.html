@@ -35,7 +35,10 @@
                 </ion-item>
               </ion-col>
             </ion-row>
-            <ion-button color="primary" type="submit" [disabled]="signUpForm.invalid">Sign up</ion-button>
+            <ion-button color="primary" type="submit" [disabled]="signUpForm.invalid || loading">
+              <ion-spinner *ngIf="loading" style="height: 20px;"></ion-spinner>
+              Sign up
+            </ion-button>
           </form>
           <ion-row class="not-member">
             <span>Already a member?</span>

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ElementRef, Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { ref } from '@angular/fire/storage';
 import { firstValueFrom, map } from 'rxjs';
 import { Expense } from '../models/expense.model';
@@ -70,7 +70,9 @@ export class ExpenseService {
       console.log('getExpense online');
       console.log(userId);
       const res = await firstValueFrom(this.fstore.collection('Expenses').doc(userId).valueChanges());
-      await this.storeDataInIndexedDB(res);
+      if (res) {
+        await this.storeDataInIndexedDB(res);
+      }
       return res;
     } else {
       console.log(isOnline);
@@ -202,27 +204,79 @@ export class ExpenseService {
           }
         };
 
-        await this.fstore.collection('Expenses').doc(id).set(expense);
-        await this.fstore.collection('Expenses').doc(userId).update({
-          activeMonths: arrayUnion(monthStr),
-        });
+        const expenseRef = this.fstore.collection('Expenses').doc(id);
+        const activeMonthsRef = this.fstore.collection('Expenses').doc(userId);
+        try {
+          await this.fstore.firestore.runTransaction(async (transaction) => {
+            const snapshot = await transaction.get(activeMonthsRef.ref);
+
+            if (snapshot.exists) {
+              transaction.update(activeMonthsRef.ref, {
+                activeMonths: arrayUnion(monthStr),
+              });
+            } else {
+              transaction.set(activeMonthsRef.ref, {
+                id: userId,
+                activeMonths: [monthStr],
+              });
+            }
+
+            transaction.set(expenseRef.ref, expense);
+          });
+        } catch (e) {
+          console.log(e);
+        }
+
         await this.storeDataInIndexedDB(expense);
       }
     } else {
-      const id = await this.fstore.collection('Expenses').ref.doc().id;
-      const expense: Expense = {
-        id,
-        userId,
-        month: monthStr,
-        guests: [],
-        transactions: [transaction],
-        summary: {
-          spent: amount,
-          storeCount: 1,
-          transactionCount: 1
+      const activeMonthsObj = await this.getActiveMonths(userId);
+
+      // ha van mar activeMonths
+      if (activeMonthsObj) {
+        const activeMonths: string[] = activeMonthsObj.activeMonths;
+        // ha nincs meg ilyen honap, adjuk hozza
+        if (!activeMonths.includes(monthStr)) {
+          activeMonths.push(monthStr);
+          // hozzaadjuk ujra a lokalhoz, azaz felulirjuk az elozot, hogy syncelodjon
+          await this.storeDataInIndexedDB(activeMonthsObj, true);
         }
-      };
-      await this.storeDataInIndexedDB(expense, true);
+      } else {
+        // ha meg nincs activeMonths, hozza kell adni
+        const activeMonthsObj = {
+          id: userId,
+          activeMonths: [monthStr]
+        }
+        // flageljuk a synchez
+        await this.storeDataInIndexedDB(activeMonthsObj, true);
+      }
+
+      const expenseObj = await this.getExpense(monthStr, userId);
+
+      if (expenseObj) {
+        expenseObj.summary.spent += amount;
+        expenseObj.summary.transactionCount++;
+        if (expenseObj.transactions.filter(item => item.storeName === storeName).length === 0) {
+          expenseObj.summary.storeCount++;
+        }
+        expenseObj.transactions.push(transaction);
+        await this.storeDataInIndexedDB(expenseObj, true);
+      } else {
+        const id = await this.fstore.collection('Expenses').ref.doc().id;
+        const expense: Expense = {
+          id,
+          userId,
+          month: monthStr,
+          guests: [],
+          transactions: [transaction],
+          summary: {
+            spent: amount,
+            storeCount: 1,
+            transactionCount: 1
+          }
+        };
+        await this.storeDataInIndexedDB(expense, true);
+      }
     }
   }
 
@@ -264,10 +318,37 @@ export class ExpenseService {
     }
   }
 
+  async mergeActiveMonths(data: any) {
+    const activeMonthsRef = this.fstore.collection('Expenses').doc(data.id);
+    try {
+      await this.fstore.firestore.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(activeMonthsRef.ref);
+
+        if (snapshot.exists) {
+          transaction.update(activeMonthsRef.ref, {
+            activeMonths: arrayUnion(data.activeMonths),
+          });
+
+        } else {
+          transaction.set(activeMonthsRef.ref, {
+            id: data.id,
+            activeMonths: data.activeMonths,
+          });
+        }
+      }).then(async () => {
+        await this.removeItemFromIndexedDB(data.id);
+        const activeMonthsObj = await this.getActiveMonths(data.id);
+        await this.storeDataInIndexedDB(activeMonthsObj);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async addGuest() {
     const isOnline = await firstValueFrom(this.network.getNetworkState());
     if (isOnline === 'online') {
-      
+
     }
   }
 

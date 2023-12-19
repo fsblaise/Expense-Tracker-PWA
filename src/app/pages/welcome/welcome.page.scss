@@ -1,5 +1,5 @@
 ion-card {
-    background-color: rgba(var(--ion-color-primary-rgb), 0.1);
+    background-color: rgba(var(--ion-color-primary-rgb), 0.05);
 }
 
 ion-card-content {
@@ -43,6 +43,16 @@ ion-card-content {
     
     ion-card p {
         font-size: 15px;
+    }
+}
+
+ion-card-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    ion-icon {
+        color: var(--ion-color-light-tint);
     }
 }
 

@@ -70,6 +70,7 @@ export class AddExpensePage implements OnInit, OnDestroy {
   }
 
   async addExpense(type: 'form' | 'ocr') {
+    console.log(this.user?.uid);
     if (type === 'form') {
       this.expenseService.addExpense(
         this.addExpenseForm.get('storeName')?.value,

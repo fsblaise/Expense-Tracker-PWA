@@ -15,7 +15,10 @@
                 <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
                 <ion-input placeholder="Password" type="password" formControlName="password"></ion-input>
               </ion-item>
-              <ion-button color="primary" type="submit" [disabled]="signInForm.invalid">Login</ion-button>
+              <ion-button color="primary" type="submit" [disabled]="signInForm.invalid || loading">
+                <ion-spinner *ngIf="loading" style="height: 20px;"></ion-spinner>
+                Login
+              </ion-button>
             </form>
             <ion-row class="not-member">
               <span>Not a member yet?</span>

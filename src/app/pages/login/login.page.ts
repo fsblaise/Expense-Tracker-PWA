@@ -15,6 +15,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 })
 export class LoginPage implements OnInit {
   signInForm: FormGroup = getSignInForm();
+  loading = false;
 
   constructor(private router: Router, private authService: AuthService) { }
 
@@ -22,12 +23,14 @@ export class LoginPage implements OnInit {
   }
 
   async login() {
+    this.loading = true;
     if (this.signInForm.valid) {
-      await this.authService.signIn(this.signInForm.get('email')?.value, this.signInForm.get('password')?.value);
-      await this.router.navigateByUrl('/main');
-    } else {
-      // TODO: snackbar for not matching passwords.
+      const user = await this.authService.signIn(this.signInForm.get('email')?.value, this.signInForm.get('password')?.value);
+      if (user) {
+        await this.router.navigateByUrl('/main');
+      }
     }
+    this.loading = false;
   }
 
 }

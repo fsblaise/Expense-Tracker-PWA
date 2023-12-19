@@ -9,28 +9,28 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { DialogComponent } from "../../../shared/components/dialog/dialog.component";
 
 @Component({
-    selector: 'app-details',
-    templateUrl: './details.page.html',
-    styleUrls: ['./details.page.scss'],
-    standalone: true,
-    animations: [
-        trigger('slideInOut', [
-            transition(':increment', [
-                style({ transform: 'translateX(100%)' }),
-                animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
-            ]),
-            transition(':decrement', [
-                style({ transform: 'translateX(-100%)' }),
-                animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
-            ]),
-        ]),
-        trigger('openClose', [
-            state('true', style({ height: '*' })),
-            state('false', style({ height: '0px' })),
-            transition('false <=> true', [animate(300)])
-        ])
-    ],
-    imports: [IonicModule, CommonModule, FormsModule, DialogComponent]
+  selector: 'app-details',
+  templateUrl: './details.page.html',
+  styleUrls: ['./details.page.scss'],
+  standalone: true,
+  animations: [
+    trigger('slideInOut', [
+      transition(':increment', [
+        style({ transform: 'translateX(100%)' }),
+        animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
+      ]),
+      transition(':decrement', [
+        style({ transform: 'translateX(-100%)' }),
+        animate('300ms ease-out', style({ transform: 'translateX(0%)' })),
+      ]),
+    ]),
+    trigger('openClose', [
+      state('true', style({ height: '*' })),
+      state('false', style({ height: '0px' })),
+      transition('false <=> true', [animate(300)])
+    ])
+  ],
+  imports: [IonicModule, CommonModule, FormsModule, DialogComponent]
 })
 export class DetailsPage implements OnInit {
   expense: Expense;
@@ -46,7 +46,7 @@ export class DetailsPage implements OnInit {
   small = false;
   guestsOpened = false;
   summaryOpened = false;
-  dateOpened : boolean[] = [];
+  dateOpened: boolean[] = [];
 
   constructor(private authService: AuthService, private expenseService: ExpenseService) { }
 
@@ -55,15 +55,18 @@ export class DetailsPage implements OnInit {
     this.loading = true;
     this.user = await this.authService.getLoggedInUser();
     console.log('getActiveMonth on details page')
-    this.activeMonths = (await this.expenseService.getActiveMonths(this.user?.uid as string) as any).activeMonths;
-
-    this.month = new Date().getMonth();
-    // firebase call with filter to "year-monthIndex" + userId
-    this.currentMonthIndex = this.activeMonths.findIndex((value: string) => value.includes((this.month + 1).toString()));
-    console.log('details page');
-    console.log(this.activeMonths[this.currentMonthIndex]);
-    console.log(this.user?.uid as string);
-    this.expense = await this.expenseService.getExpense(this.activeMonths[this.currentMonthIndex], this.user?.uid as string);
+    const activeMonthsObj = await this.expenseService.getActiveMonths(this.user?.uid as string);
+    if (activeMonthsObj) {
+      this.activeMonths = activeMonthsObj.activeMonths;
+      console.log('fasz')
+      this.month = new Date().getMonth();
+      // firebase call with filter to "year-monthIndex" + userId
+      this.currentMonthIndex = this.activeMonths.findIndex((value: string) => value.includes((this.month + 1).toString()));
+      console.log('details page');
+      console.log(this.activeMonths[this.currentMonthIndex]);
+      console.log(this.user?.uid as string);
+      this.expense = await this.expenseService.getExpense(this.activeMonths[this.currentMonthIndex], this.user?.uid as string);
+    }
     this.loading = false;
   }
 

@@ -4,6 +4,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { firstValueFrom, take } from 'rxjs';
 import { NetworkService } from './network.service';
+import { ToastController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,10 @@ import { NetworkService } from './network.service';
 export class AuthService {
   db: IDBDatabase;
 
-  constructor(private auth: AngularFireAuth, private store: AngularFirestore, private network: NetworkService) {
+  constructor(private auth: AngularFireAuth,
+              private store: AngularFirestore,
+              private network: NetworkService,
+              private toastController: ToastController) {     
     const request = indexedDB.open('expense-tracker-db', 3);
     request.onerror = (event: any) => {
       console.error('Database error:', event.target.error);
@@ -38,7 +42,8 @@ export class AuthService {
         resolve();
       };
 
-      request.onerror = (event: any) => {
+      request.onerror = async (event: any) => {
+        await this.showToast("Something went wrong!");
         console.error('Error storing data in IndexedDB:', event.target.error);
         reject(event.target.error);
       };
@@ -46,11 +51,14 @@ export class AuthService {
   }
 
   async signUp(email: string, password: string, fullName: string) {
+    const isOnline = await firstValueFrom(this.network.getNetworkState());
+    if (!isOnline) {
+      await this.showToast("You can't sign up, while disconnected from the internet!");
+    }
     try {
-      await this.auth.createUserWithEmailAndPassword(email, password);
-      const id = await this.store.collection('Users').ref.doc().id;
+      const user = await this.auth.createUserWithEmailAndPassword(email, password);
       const userObj = {
-        id,
+        id: user.user?.uid,
         email,
         fullName,
         syncDarkMode: false,
@@ -60,12 +68,16 @@ export class AuthService {
           language: 'hun'
         },
       } as User;
-      await this.store.collection('Users').doc(id).set(userObj);
+      await this.store.collection('Users').doc(user.user?.uid).set(userObj);
       await this.storeDataInIndexedDB(userObj);
       return userObj;
-    } catch (e) {
-      console.log('something went wrong');
-      console.log(e);
+    } catch (e: any) {
+      if (e.code === 'auth/email-already-in-use') {
+        await this.showToast("Email is already in use!");
+      } else {
+        await this.showToast("Something went wrong!");
+        console.log(e);
+      }
       return;
     }
   }
@@ -83,7 +95,7 @@ export class AuthService {
         await this.storeDataInIndexedDB(user, true);
       }
     } catch (e) {
-      console.log('something went wrong');
+      await this.showToast("Something went wrong!");
       console.log(e);
       return;
     }
@@ -95,18 +107,29 @@ export class AuthService {
   }
 
   async signIn(email: string, password: string) {
+    const isOnline = await firstValueFrom(this.network.getNetworkState());
+    if (!isOnline) {
+      await this.showToast("You can't log in, while disconnected from the internet!");
+    }
     try {
       const user = await this.auth.signInWithEmailAndPassword(email, password);
+      const log = await this.getLoggedInUser();
+      console.log(log?.uid);
       return user;
-    } catch (e) {
-      console.log('something went wrong');
-      console.log(e);
+    } catch (e: any) {
+      if (e.code === 'auth/invalid-credential') {
+        await this.showToast("Incorrect email or password!");
+      } else {
+        await this.showToast("Something went wrong!");
+        console.log(e);
+      }
       return;
     }
   }
 
   async signOut() {
     await this.auth.signOut();
+    window.location.reload();
   }
 
   async getLoggedInUser() {
@@ -117,7 +140,7 @@ export class AuthService {
     const isOnline = await firstValueFrom(this.network.getNetworkState());
     try {
       const id = (await this.getLoggedInUser())?.uid as string;
-      if (isOnline === 'online') {
+      if (isOnline === 'online') {        
         const user = await firstValueFrom(await this.store.collection('Users').doc(id).valueChanges()) as unknown as User;
         console.log(id);
         console.log(user.id);
@@ -137,16 +160,26 @@ export class AuthService {
               resolve(null);
             }
           };
-          request.onerror = (event: any) => {
+          request.onerror = async (event: any) => {
+            await this.showToast("Something went wrong!");
             console.error('Error getting data from IndexedDB:', event.target.error);
             reject(event.target.error);
           };
         });
       }
     } catch (e) {
-      console.log('something went wrong');
+      await this.showToast("Something went wrong!");
       console.log(e);
       return null;
     }
+  }
+
+  async showToast(msg: string) {
+    const toast = await this.toastController.create({
+      message: msg,
+      cssClass: "custom-toast",
+      duration: 2000
+    });
+    await toast.present();
   }
 }

@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/shared/services/auth.service';
 import { ExpenseService } from 'src/app/shared/services/expense.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { DialogComponent } from "../../../shared/components/dialog/dialog.component";
+import { User } from 'src/app/shared/models/user.model';
 
 @Component({
   selector: 'app-details',
@@ -47,6 +48,7 @@ export class DetailsPage implements OnInit {
   guestsOpened = false;
   summaryOpened = false;
   dateOpened: boolean[] = [];
+  userObj: User;
 
   constructor(private authService: AuthService, private expenseService: ExpenseService) { }
 
@@ -54,11 +56,11 @@ export class DetailsPage implements OnInit {
     this.onResize('');
     this.loading = true;
     this.user = await this.authService.getLoggedInUser();
+    this.userObj = await this.authService.getLoggedInUserObj();
     console.log('getActiveMonth on details page')
     const activeMonthsObj = await this.expenseService.getActiveMonths(this.user?.uid as string);
     if (activeMonthsObj) {
       this.activeMonths = activeMonthsObj.activeMonths;
-      console.log('fasz')
       this.month = new Date().getMonth();
       // firebase call with filter to "year-monthIndex" + userId
       this.currentMonthIndex = this.activeMonths.findIndex((value: string) => value.includes((this.month + 1).toString()));

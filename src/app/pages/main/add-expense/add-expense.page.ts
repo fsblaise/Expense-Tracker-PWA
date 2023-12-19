@@ -11,6 +11,9 @@ import { DialogComponent } from 'src/app/shared/components/dialog/dialog.compone
 import { ExpenseService } from 'src/app/shared/services/expense.service';
 import { getAddExpenseForm } from 'src/app/shared/forms/add-expense.form';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { User } from 'src/app/shared/models/user.model';
+import { NetworkService } from 'src/app/shared/services/network.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-add-expense',
@@ -40,13 +43,17 @@ export class AddExpensePage implements OnInit, OnDestroy {
   showAlert = false;
   processedText: string;
   selectedFile: File | null = null;
-  online: boolean = true;
+  userObj: User;
 
   addExpenseForm: FormGroup = getAddExpenseForm();
 
 
-  constructor(private expenseService: ExpenseService, private authService: AuthService) {
-    this.workerPromise = createWorker("hun", 1, {
+  constructor(private expenseService: ExpenseService, private authService: AuthService, private networkService: NetworkService) {
+    this.workerPromise = this.initTesseractWorker('hun');
+  }
+
+  async initTesseractWorker(lang: string) {
+    return createWorker(lang, 1, {
       logger: (m) => {
         console.log(m)
         if (m.status.includes('recognizing text')) {
@@ -60,6 +67,12 @@ export class AddExpensePage implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.user = await this.authService.getLoggedInUser();
+    this.userObj = await this.authService.getLoggedInUserObj();
+
+    this.worker = await this.workerPromise;
+    await this.worker.terminate();
+    
+    this.workerPromise = this.initTesseractWorker(this.userObj.expensePreferences.language);
     this.worker = await this.workerPromise;
     this.worker.setParameters({
       // tessedit_char_whitelist: 'öszenÖBbakárty0123456789',
@@ -86,9 +99,10 @@ export class AddExpensePage implements OnInit, OnDestroy {
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
   async doOCR() {
     if (this.fileInput.nativeElement.files) {
-      if (this.online) {
+      const isOnline = await firstValueFrom(this.networkService.getNetworkState());
+      if (isOnline) {
         this.processing = true;
-        const response = await this.expenseService.doOcr(this.fileInput);
+        const response = await this.expenseService.doOcr(this.fileInput, this.userObj.expensePreferences.language);
         console.log(response);
         this.processedText = `Bolt neve: valami`;
         this.showAlert = true;

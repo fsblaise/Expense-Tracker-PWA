@@ -124,7 +124,7 @@
           <ion-col class="ion-no-padding">
             <ion-row>
               <ion-col size="4">Store</ion-col>
-              <ion-col size="4">Amount (Ft)</ion-col>
+              <ion-col size="4">Amount ({{userObj.expensePreferences.currency}})</ion-col>
               <ion-col size="4">Date</ion-col>
             </ion-row>
             <ion-row *ngFor="let transaction of expense.transactions; let i = index">

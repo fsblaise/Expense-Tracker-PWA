@@ -352,7 +352,7 @@ export class ExpenseService {
     }
   }
 
-  async doOcr(input: ElementRef<HTMLInputElement>): Promise<Object | null> {
+  async doOcr(input: ElementRef<HTMLInputElement>, lang: string): Promise<Object | null> {
     const inputEl = input.nativeElement;
     if (inputEl.files && inputEl.files.length > 0) {
       const file = inputEl.files[0];
@@ -360,7 +360,7 @@ export class ExpenseService {
 
       const formData: FormData = new FormData();
       formData.append('file', file);
-      formData.append('language', 'hun');
+      formData.append('language', lang);
       formData.append('IsCreateSearchablePDF', 'false');
       formData.append('isSearchablePdfHideTextLayer', 'false');
       formData.append('isTable', 'true');

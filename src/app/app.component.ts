@@ -42,6 +42,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.onResize('');
+    
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    this.initializeDarkTheme(prefersDark.matches);
+    prefersDark.addEventListener('change', (mediaQuery) => this.initializeDarkTheme(mediaQuery.matches));
+
     // Manifest állományok összevetése 3 másodpercenként
     this.subscription = interval(3000).subscribe(() => {
 
@@ -87,6 +92,18 @@ export class AppComponent implements OnInit {
         this.isColored = false;
       }
     }
+  }
+
+  initializeDarkTheme(isDark: boolean) {
+    this.toggleDarkTheme(isDark);
+  }
+
+  toggleChange(ev: any) {
+    this.toggleDarkTheme(ev.detail.checked);
+  }
+
+  toggleDarkTheme(shouldAdd: boolean) {
+    document.body.classList.toggle('dark', shouldAdd);
   }
 
   ngOnDestroy(): void {

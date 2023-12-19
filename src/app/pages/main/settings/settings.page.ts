@@ -19,11 +19,12 @@ export class SettingsPage implements OnInit {
   user: User | null;
   darkMode: boolean;
   loading: boolean;
-  
+
   constructor(private authService: AuthService) { }
 
-  async ngOnInit() {   
+  async ngOnInit() {
     this.loading = true;
+
     this.user = await this.authService.getLoggedInUserObj();
     if (this.user) {
       this.profileSettingsForm.get('syncDarkMode')?.setValue(this.user?.syncDarkMode);
@@ -32,17 +33,36 @@ export class SettingsPage implements OnInit {
       this.expenseSettingsForm.get('currency')?.setValue(this.user?.expensePreferences.currency);
       this.expenseSettingsForm.get('language')?.setValue(this.user?.expensePreferences.language);
     }
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    this.initializeDarkTheme(prefersDark.matches);
+    prefersDark.addEventListener('change', (mediaQuery) => this.initializeDarkTheme(mediaQuery.matches));
+
     this.loading = false;
   }
 
-  toggleDarkMode() {
+  initializeDarkTheme(isDark: boolean) {
+    if (this.user && this.user.syncDarkMode) {
+      this.profileSettingsForm.get('darkMode')?.setValue(this.user.darkMode as boolean);
+      this.toggleDarkTheme(this.user.darkMode as boolean);
+    } else {
+      this.profileSettingsForm.get('darkMode')?.setValue(isDark);
+      this.toggleDarkTheme(isDark);
+    }
+  }
 
+  toggleChange(ev: any) {
+    this.toggleDarkTheme(ev.detail.checked);
+  }
+
+  toggleDarkTheme(shouldAdd: boolean) {
+    document.body.classList.toggle('dark', shouldAdd);
   }
 
   async updateProfile() {
     if (this.user) {
       this.user.syncDarkMode = this.profileSettingsForm.get('syncDarkMode')?.value;
-      if(this.user.syncDarkMode) {
+      if (this.user.syncDarkMode) {
         this.user.darkMode = this.profileSettingsForm.get('darkMode')?.value;
       } else {
         this.user.darkMode = null;
